@@ -5,6 +5,8 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 
 import { HomePage } from './home.page';
+import { CustomHeaderComponent } from '../custom-header/custom-header.component';
+import { CustomFooterComponent } from '../custom-footer/custom-footer.component';
 
 @NgModule({
   imports: [
@@ -18,6 +20,10 @@ import { HomePage } from './home.page';
       }
     ])
   ],
-  declarations: [HomePage]
+  declarations: [
+    HomePage,
+    CustomHeaderComponent,
+    CustomFooterComponent,
+  ]
 })
 export class HomePageModule {}
