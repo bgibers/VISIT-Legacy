@@ -249,7 +249,7 @@ export class HomePage implements AfterViewInit {
       addButton.parent = chart.zoomControl;
 
       const editImage = addButton.createChild(am4core.Image);
-      editImage.href = '../../assets/iosCustomVisit/heart.png';
+      editImage.href = '../../assets/icon/heart.png';
       editImage.width = 15;
       editImage.height = 15;
       addButton.insertBefore(chart.zoomControl);
