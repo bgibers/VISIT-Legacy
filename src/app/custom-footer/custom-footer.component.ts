@@ -1,14 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, Input } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { SelectedLocationPage } from '../modals/selected-location/selected-location.page';
 @Component({
   selector: 'app-custom-footer',
   templateUrl: './custom-footer.component.html',
   styleUrls: ['./custom-footer.component.scss'],
 })
-export class CustomFooterComponent implements OnInit {
+export class CustomFooterComponent{
 
-  constructor() { }
+  @Input() selectedArea: any;
+  constructor(public modalController: ModalController) { }
 
-  ngOnInit() {}
+  onClick() {
+    this.presentModal();
+  }
+
+  async presentModal() {
+    const modal = await this.modalController.create({
+      component: SelectedLocationPage
+    });
+    return await modal.present();
+  }
 
 }

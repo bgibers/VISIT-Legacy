@@ -1,0 +1,30 @@
+<ion-header>
+	<ion-toolbar>
+		<ion-buttons>
+			<button (click)="cancel()">
+				<ion-icon name="close"></ion-icon>
+			</button>
+		</ion-buttons>
+    <ion-title>selected-location</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+</ion-content>
+
+<ion-footer no-shadow>
+  <ion-toolbar position="bottom" color="lightgrey">
+    <ion-grid fixed="true" class="my-grid">
+      <ion-row class="parent-row">
+        <ion-col size="2"></ion-col>
+        <ion-col text-center>
+          <ion-button fill="clear" (click)="cancel()">
+              <ion-icon color="light" name="home" size="large"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col size="2"></ion-col>
+      </ion-row>
+    </ion-grid>        
+  </ion-toolbar>
+</ion-footer>

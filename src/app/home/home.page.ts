@@ -20,6 +20,7 @@ export class HomePage implements AfterViewInit {
   private usaSeries: am4maps.MapPolygonSeries;
   private canadaSeries: am4maps.MapPolygonSeries;
   private russiaSeries: am4maps.MapPolygonSeries;
+  public selectedArea: any;
 
   constructor(private zone: NgZone) {}
 
@@ -175,6 +176,7 @@ export class HomePage implements AfterViewInit {
           console.log(data.id);
           console.log(data.name);
           console.log(data.visited);
+          this.selectedArea = data;
           // chttps://codepen.io/team/amcharts/pen/qgLprb
           // create seperate json file to read id's from
 
@@ -191,6 +193,7 @@ export class HomePage implements AfterViewInit {
           console.log(data.id);
           console.log(data.name);
           console.log(data.visited);
+          this.selectedArea = data;
 
           ev.target.series.chart.zoomToMapObject(ev.target);
           if (lastSelected !== ev.target) {
@@ -203,6 +206,7 @@ export class HomePage implements AfterViewInit {
           console.log(data.id);
           console.log(data.name);
           console.log(data.visited);
+          this.selectedArea = data;
 
           ev.target.series.chart.zoomToMapObject(ev.target);
           if (lastSelected !== ev.target) {
@@ -215,6 +219,7 @@ export class HomePage implements AfterViewInit {
           console.log(data.id);
           console.log(data.name);
           console.log(data.visited);
+          this.selectedArea = data;
 
           ev.target.series.chart.zoomToMapObject(ev.target);
           if (lastSelected !== ev.target) {
@@ -254,28 +259,28 @@ export class HomePage implements AfterViewInit {
       editImage.height = 15;
       addButton.insertBefore(chart.zoomControl);
 
-      const legend = new am4maps.Legend();
-      legend.parent = chart.chartContainer;
-      legend.background.fill = am4core.color('#000');
-      legend.background.fillOpacity = 0.15;
-      legend.width = 90;
-      legend.height = 90;
-      legend.align = 'left';
-      legend.valign = 'bottom';
-      legend.contentAlign = 'left';
-      legend.padding(10, 15, 10, 15);
-      legend.labels.template.wrap = true;
-      legend.labels.template.scale = .45;
-      legend.labels.template.maxWidth = 80;
-      legend.data = [{
-        name: 'Plans to visit',
-        fill: '#0000FF'
-      }, {
-        name: 'Visited',
-        fill: '#E94F37'
-      }];
-      legend.itemContainers.template.clickable = false;
-      legend.itemContainers.template.focusable = false;
+      // const legend = new am4maps.Legend();
+      // legend.parent = chart.chartContainer;
+      // legend.background.fill = am4core.color('#000');
+      // legend.background.fillOpacity = 0.15;
+      // legend.width = 90;
+      // legend.height = 90;
+      // legend.align = 'left';
+      // legend.valign = 'bottom';
+      // legend.contentAlign = 'left';
+      // legend.padding(10, 15, 10, 15);
+      // legend.labels.template.wrap = true;
+      // legend.labels.template.scale = .45;
+      // legend.labels.template.maxWidth = 80;
+      // legend.data = [{
+      //   name: 'Plans to visit',
+      //   fill: '#0000FF'
+      // }, {
+      //   name: 'Visited',
+      //   fill: '#E94F37'
+      // }];
+      // legend.itemContainers.template.clickable = false;
+      // legend.itemContainers.template.focusable = false;
 
 
       // manually trigger event
