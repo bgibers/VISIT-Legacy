@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, NgZone, OnDestroy } from '@angular/core';
+import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4maps from '@amcharts/amcharts4/maps';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
@@ -12,7 +12,7 @@ import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements AfterViewInit {
+export class HomePage {
 
   private chart: am4maps.MapChart;
   private polygonTemplate: any;
@@ -20,37 +20,18 @@ export class HomePage implements AfterViewInit {
   private usaSeries: am4maps.MapPolygonSeries;
   private canadaSeries: am4maps.MapPolygonSeries;
   private russiaSeries: am4maps.MapPolygonSeries;
-  public selectedArea: any;
+  private selectedArea: any;
 
   constructor(private zone: NgZone) {}
 
-  changeVisitStatus(locationId, status) {
-    // ($('#myModal') as any).modal('show');
-    console.log(location);
-    let data;
-    const worldSeries = this.worldSeries;
-    const usaSeries = this.usaSeries;
-    const canadaSeries = this.canadaSeries;
-    const russiaSeries = this.russiaSeries;
+  ionViewDidEnter() {
+    this.onLoad();
+  }
 
-    if (locationId.toString().includes('US-')) {
-        data = usaSeries.getPolygonById(locationId);
-     } else if (locationId.toString().includes('CA-')) {
-        data = canadaSeries.getPolygonById(locationId);
-     } else if (locationId.toString().includes('RU-')) {
-        data = russiaSeries.getPolygonById(locationId);
-     } else {
-        data = worldSeries.getPolygonById(locationId);
-     }
-
-    // ($('#myModalTitle') as any).text(data.dataItem.dataContext.name);
-
-    if (status === 'visited') {
-       data.setState('visited');
-     } else if (status === 'toVisit') {
-       data.setState('toVisit');
-     }
-   }
+  async ionViewWillEnter() {
+    await this.loadMap();
+    this.onLoad();
+  }
 
   onLoad() {
      const jsonObj = [
@@ -64,11 +45,7 @@ export class HomePage implements AfterViewInit {
      }
    }
 
-   ionViewDidEnter() {
-     this.ngAfterViewInit();
-   }
-
-   ngAfterViewInit() {
+  async loadMap() {
     console.log('Im entering');
     this.zone.runOutsideAngular(() => {
       let polygonTemplate;
@@ -79,14 +56,10 @@ export class HomePage implements AfterViewInit {
       let chart;
       am4core.ready(() => {
 
-      // Themes begin
       am4core.useTheme(am4themes_animated);
-      // Themes end
 
       // Create map instance
       chart = am4core.create('chartdiv', am4maps.MapChart);
-      // chart.background.fill = am4core.color("#aadaff");
-      // chart.background.fillOpacity = 1;
       chart.geodata = worldLow;
       chart.projection = new am4maps.projections.Miller();
       chart.zoomControl = new am4maps.ZoomControl();
@@ -99,20 +72,14 @@ export class HomePage implements AfterViewInit {
 
       polygonTemplate = worldSeries.mapPolygons.template;
       polygonTemplate.tooltipText = '{name}';
-      // polygonTemplate.fill = chart.colors.getIndex(0);
       polygonTemplate.nonScalingStroke = true;
       polygonTemplate.applyOnClones = true;
-      // polygonTemplate.togglable = true;
       polygonTemplate.strokeOpacity = 0.5;
 
 
       // Create states for world map
       let lastSelected;
       const activeState = polygonTemplate.states.create('active');
-      // activeState.properties.fill = chart.colors.getIndex(4);
-
-      // var hs = polygonTemplate.states.create("hover");
-      // hs.properties.fill = chart.colors.getIndex(4);
 
       const visited = polygonTemplate.states.create('visited');
       visited.properties.fill = am4core.color('#E94F37');
@@ -126,7 +93,6 @@ export class HomePage implements AfterViewInit {
 
       const usPolygonTemplate = usaSeries.mapPolygons.template;
       usPolygonTemplate.tooltipText = '{name}';
-      // usPolygonTemplate.fill = chart.colors.getIndex(1);
       usPolygonTemplate.nonScalingStroke = true;
 
       const usVisited = usPolygonTemplate.states.create('visited');
@@ -163,11 +129,6 @@ export class HomePage implements AfterViewInit {
       const russiaToVisit = russiaPolygonTemplate.states.create('toVisit');
       russiaToVisit.properties.fill = am4core.color('#E94F37');
 
-
-      // Hover state
-      // var usahs = usPolygonTemplate .states.create("hover");
-      // usahs.properties.fill = chart.colors.getIndex(4);
-
       console.log(polygonTemplate);
       console.log(worldSeries);
 
@@ -177,7 +138,7 @@ export class HomePage implements AfterViewInit {
           console.log(data.name);
           console.log(data.visited);
           this.selectedArea = data;
-          // chttps://codepen.io/team/amcharts/pen/qgLprb
+          // https://codepen.io/team/amcharts/pen/qgLprb
           // create seperate json file to read id's from
 
           ev.target.series.chart.zoomToMapObject(ev.target);
@@ -246,47 +207,7 @@ export class HomePage implements AfterViewInit {
       homeButton.parent = chart.zoomControl;
       homeButton.insertBefore(chart.zoomControl.plusButton);
 
-      // new location button
-
-      addButton.padding(7, 5, 7, 5);
-      addButton.width = 30;
-      addButton.marginBottom = 10;
-      addButton.parent = chart.zoomControl;
-
-      const editImage = addButton.createChild(am4core.Image);
-      editImage.href = '../../assets/icon/heart.png';
-      editImage.width = 15;
-      editImage.height = 15;
-      addButton.insertBefore(chart.zoomControl);
-
-      // const legend = new am4maps.Legend();
-      // legend.parent = chart.chartContainer;
-      // legend.background.fill = am4core.color('#000');
-      // legend.background.fillOpacity = 0.15;
-      // legend.width = 90;
-      // legend.height = 90;
-      // legend.align = 'left';
-      // legend.valign = 'bottom';
-      // legend.contentAlign = 'left';
-      // legend.padding(10, 15, 10, 15);
-      // legend.labels.template.wrap = true;
-      // legend.labels.template.scale = .45;
-      // legend.labels.template.maxWidth = 80;
-      // legend.data = [{
-      //   name: 'Plans to visit',
-      //   fill: '#0000FF'
-      // }, {
-      //   name: 'Visited',
-      //   fill: '#E94F37'
-      // }];
-      // legend.itemContainers.template.clickable = false;
-      // legend.itemContainers.template.focusable = false;
-
-
-      // manually trigger event
-      // chart.zoomOutButton.dispatchImmediately("hit");
-      // https://www.amcharts.com/docs/v4/concepts/event-listeners/
-      }); // end am4core.ready()
+    }); // end am4core.ready()
 
       // get longs and lat of clicked spot
       // custom loader
@@ -300,11 +221,56 @@ export class HomePage implements AfterViewInit {
       this.usaSeries = usaSeries;
       this.canadaSeries = canadaSeries;
       this.russiaSeries = russiaSeries;
-
     });
   }
-  ionViewDidLeave() {
-  
+
+  async changeVisitStatus(locationId, status) {
+    // ($('#myModal') as any).modal('show');
+    console.log(locationId);
+    const worldSeries = this.worldSeries;
+    const usaSeries = this.usaSeries;
+    const canadaSeries = this.canadaSeries;
+    const russiaSeries = this.russiaSeries;
+    let selectedArea;
+
+    if (locationId.toString().includes('US-')) {
+      selectedArea = usaSeries.getPolygonById(locationId);
+      console.log(selectedArea);
+
+    } else if (locationId.toString().includes('CA-')) {
+      selectedArea = canadaSeries.getPolygonById(locationId);
+      console.log(selectedArea);
+
+    } else if (locationId.toString().includes('RU-')) {
+      selectedArea = russiaSeries.getPolygonById(locationId);
+      console.log(selectedArea);
+
+    } else {
+      selectedArea = worldSeries.getPolygonById(locationId);
+      console.log(selectedArea);
+
+    }
+
+    // const selectedArea = this.selectedArea;
+
+    console.log(selectedArea);
+
+    // ($('#myModalTitle') as any).text(data.dataItem.dataContext.name);
+
+    if (status === 'visited') {
+     selectedArea.setState('visited');
+    } else if (status === 'toVisit') {
+     selectedArea.setState('toVisit');
+    } else if (status === 'lived') {
+    selectedArea.setState('visited');
+    } else if (status === 'dream') {
+    selectedArea.setState('toVisit');
+    }
+
+    this.selectedArea = selectedArea;
+  }
+
+  ionViewWillLeave() {
     console.log('Im leaving');
     this.zone.runOutsideAngular(() => {
       if (this.chart) {
