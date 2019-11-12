@@ -21,6 +21,7 @@ export class SelectedLocationPage {
   private canadaSeries: am4maps.MapPolygonSeries;
   private russiaSeries: am4maps.MapPolygonSeries;
   private selectedArea: any;
+  private _statusToSend: any;
   private _name: string;
   private _id: any;
 
@@ -44,6 +45,14 @@ export class SelectedLocationPage {
 
   set selectedName(name) {
       this._name = name;
+  }
+
+  get statusToSend() {
+    return this._statusToSend;
+  }
+
+  set statusToSend(status) {
+      this._statusToSend = status;
   }
 
   ionViewDidEnter() {
@@ -283,9 +292,9 @@ export class SelectedLocationPage {
 
     // ($('#myModalTitle') as any).text(data.dataItem.dataContext.name);
 
-    if (status === 'visited') {
+    if (status === 'visited' || status === 'lived') {
       selectedArea.setState('visited');
-    } else if (status === 'toVisit') {
+    } else if (status === 'toVisit' || status === 'dream') {
       selectedArea.setState('toVisit');
     }
 
@@ -317,6 +326,12 @@ export class SelectedLocationPage {
   // call to service for searching
 
   // call to service on publish
+
+
+  onChangeHandler(event: any) {
+    this.statusToSend = event.detail.value;
+    console.log(this.statusToSend);
+  }
 
   cancel() {
     // using the injected ModalController this page
