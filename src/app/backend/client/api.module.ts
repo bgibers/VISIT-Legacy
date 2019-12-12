@@ -1,14 +1,21 @@
 import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core';
 import { Configuration } from './configuration';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
 
 import { LocationService } from './api/location.service';
 import { UserService } from './api/user.service';
 import { UserLocationService } from './api/userLocation.service';
+import { FormsModule } from '@angular/forms';
+import { IonicStorageModule } from '@ionic/storage';
 
 @NgModule({
-  imports:      [],
+imports: [
+        CommonModule,
+        FormsModule,
+        IonicStorageModule.forRoot()
+    ],
   declarations: [],
   exports:      [],
   providers: [
