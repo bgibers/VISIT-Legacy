@@ -6,7 +6,8 @@ import worldLow from '@amcharts/amcharts4-geodata/worldLow';
 import am4geodata_usaLow from '@amcharts/amcharts4-geodata/usaLow';
 import am4geodata_canadaLow from '@amcharts/amcharts4-geodata/canadaLow';
 import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
-import { JwtToken, UserService } from '../backend/client';
+import { JwtToken, UserService, LocationService, UserLocation } from '../backend/client';
+import { Observable, BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -22,28 +23,42 @@ export class HomePage {
   private russiaSeries: am4maps.MapPolygonSeries;
   private selectedArea: any;
   private jwtToken: JwtToken;
-  constructor(private zone: NgZone) {}
+  private userLocations: BehaviorSubject<UserLocation[]> = new BehaviorSubject([]);
 
-  ionViewDidEnter() {
+  constructor(private zone: NgZone, private userService: UserService,
+              private locationService: LocationService) {}
+
+  async ionViewDidEnter() {
     this.onLoad();
   }
 
   async ionViewWillEnter() {
     await this.loadMap();
-    this.onLoad();
+    this.jwtToken = await this.userService.getUser();
+    this.getUserLocations();
   }
 
   onLoad() {
-     const jsonObj = [
-       {
-           location : 'US-SC',
-           status : 'visited'
+    console.log('OnLoad');
+    for (const obj of this.userLocations.value) {
+       let status: string;
+       if (obj.visited === 1) {
+         status = 'visited';
+       } else if (obj.toVisit === 1) {
+         status = 'toVisit';
        }
-     ];
-     for (const obj of jsonObj) {
-       this.changeVisitStatus(obj.location, obj.status);
+       console.log(obj.visited);
+       this.changeVisitStatus(obj.locationId, status);
      }
    }
+
+  getUserLocations() {
+    console.log('GetUserLoc');
+    this.locationService.locationGetLocationsByUserId(this.jwtToken.id).subscribe((result: UserLocation[]) => {
+      this.userLocations.next(result);
+      this.onLoad();
+    });
+  }
 
   async loadMap() {
     console.log('Im entering');
@@ -128,9 +143,6 @@ export class HomePage {
 
       const russiaToVisit = russiaPolygonTemplate.states.create('toVisit');
       russiaToVisit.properties.fill = am4core.color('#E94F37');
-
-      console.log(polygonTemplate);
-      console.log(worldSeries);
 
       polygonTemplate.events.on('hit', (ev) => {
           const data = ev.target.dataItem.dataContext;
@@ -279,8 +291,8 @@ export class HomePage {
     });
   }
 
-  editProfile() {
-    
+  async editProfile() {
+    console.log(this.jwtToken.id);
   }
 
 }
