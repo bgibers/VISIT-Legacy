@@ -111,8 +111,8 @@ export class UserService {
      * @param reportProgress flag to report request and response progress.
      */
     // public userLoginUser(credentials: CredentialsViewModel, observe: any = 'body', reportProgress: boolean = false ): Observable<any>;
-    //public userLoginUser(credentials: CredentialsViewModel, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<JwtToken>>;
-    //public userLoginUser(credentials: CredentialsViewModel, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<JwtToken>>;
+    // public userLoginUser(credentials: CredentialsViewModel, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<JwtToken>>;
+    // public userLoginUser(credentials: CredentialsViewModel, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<JwtToken>>;
     public userLoginUser(credentials: CredentialsViewModel, observe?: 'body', reportProgress?: boolean): Observable<JwtToken> {
     // public userLoginUser(credentials: CredentialsViewModel, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
 
@@ -173,6 +173,18 @@ export class UserService {
 
     public isLoggedIn() {
         return this.authSubject.asObservable();
+    }
+
+    public async getUser(): Promise<JwtToken> {
+        if (this.isLoggedIn) {
+            const token: JwtToken = {
+                authToken: await this.storage.get('ACCESS_TOKEN'),
+                id: await this.storage.get('USER_ID'),
+                expiresIn: await this.storage.get('EXPIRES_IN')
+            } as JwtToken;
+
+            return token;
+        }
     }
 
     /**

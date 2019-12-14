@@ -6,7 +6,7 @@ import worldLow from '@amcharts/amcharts4-geodata/worldLow';
 import am4geodata_usaLow from '@amcharts/amcharts4-geodata/usaLow';
 import am4geodata_canadaLow from '@amcharts/amcharts4-geodata/canadaLow';
 import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
-
+import { JwtToken, UserService } from '../backend/client';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -21,7 +21,7 @@ export class HomePage {
   private canadaSeries: am4maps.MapPolygonSeries;
   private russiaSeries: am4maps.MapPolygonSeries;
   private selectedArea: any;
-
+  private jwtToken: JwtToken;
   constructor(private zone: NgZone) {}
 
   ionViewDidEnter() {
@@ -278,4 +278,9 @@ export class HomePage {
       }
     });
   }
+
+  editProfile() {
+    
+  }
+
 }
