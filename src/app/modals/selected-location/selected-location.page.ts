@@ -7,6 +7,8 @@ import worldLow from '@amcharts/amcharts4-geodata/worldLow';
 import am4geodata_usaLow from '@amcharts/amcharts4-geodata/usaLow';
 import am4geodata_canadaLow from '@amcharts/amcharts4-geodata/canadaLow';
 import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
+import { JwtToken, UserService, LocationService, UserLocationService, UserLocation } from '../../backend/client';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-selected-location',
@@ -24,11 +26,21 @@ export class SelectedLocationPage {
   private _statusToSend: any;
   private _name: string;
   private _id: any;
+  private jwtToken: JwtToken;
+  private userLocations: BehaviorSubject<UserLocation[]> = new BehaviorSubject([]);
+  private newLocations: UserLocation[] = [{
+    id: 0,
+    toVisit: 0,
+    visited: 0
+  }];
 
   constructor(private navParams: NavParams,
               private modalCtrl: ModalController,
               private zone: NgZone,
-              private ref: ChangeDetectorRef) {}
+              private ref: ChangeDetectorRef,
+              private userService: UserService,
+              private locationService: LocationService,
+              private userLocationService: UserLocationService) {}
 
 
   get selectedId() {
@@ -61,6 +73,16 @@ export class SelectedLocationPage {
 
   async ionViewWillEnter() {
     await this.loadMap();
+    this.jwtToken = await this.userService.getUser();
+    this.getUserLocations();
+  }
+
+  getUserLocations() {
+    console.log('GetUserLoc');
+    this.locationService.locationGetLocationsByUserId(this.jwtToken.id).subscribe((result: UserLocation[]) => {
+      this.userLocations.next(result);
+      this.onLoad();
+    });
   }
 
   async loadMap() {
@@ -162,7 +184,7 @@ export class SelectedLocationPage {
           this.selectedName = data.name;
           this.selectedId = data.id;
 
-          console.log("name :" + this.selectedName);
+          console.log('name :' + this.selectedName);
           ev.target.series.chart.zoomToMapObject(ev.target);
           if (lastSelected !== ev.target) {
             lastSelected = ev.target;
@@ -183,7 +205,7 @@ export class SelectedLocationPage {
           this.selectedName = data.name;
           this.selectedId = data.id;
 
-          console.log("name :" + this.selectedName);
+          console.log('name :' + this.selectedName);
           ev.target.series.chart.zoomToMapObject(ev.target);
           if (lastSelected !== ev.target) {
             lastSelected = ev.target;
@@ -202,7 +224,7 @@ export class SelectedLocationPage {
           this.selectedName = data.name;
           this.selectedId = data.id;
 
-          console.log("name :" + this.selectedName);
+          console.log('name :' + this.selectedName);
           ev.target.series.chart.zoomToMapObject(ev.target);
           if (lastSelected !== ev.target) {
           lastSelected = ev.target;
@@ -221,7 +243,7 @@ export class SelectedLocationPage {
           this.selectedName = data.name;
           this.selectedId = data.id;
 
-          console.log("name :" + this.selectedName);
+          console.log('name :' + this.selectedName);
           ev.target.series.chart.zoomToMapObject(ev.target);
           if (lastSelected !== ev.target) {
             lastSelected = ev.target;
@@ -259,7 +281,7 @@ export class SelectedLocationPage {
     });
   }
 
-  changeVisitStatus(locationId, status) {
+  changeVisitStatus(locationId, status, initialLoad) {
     // ($('#myModal') as any).modal('show');
     console.log(locationId);
     const worldSeries = this.worldSeries;
@@ -298,20 +320,33 @@ export class SelectedLocationPage {
       selectedArea.setState('toVisit');
     }
 
+    if (!initialLoad) {
+      const newLocation: UserLocation = {
+        userId: this.jwtToken.id,
+        locationId: locationId,
+        visited: status === 'visited' ? 1 : 0,
+        toVisit: status === 'toVisit' ? 1 : 0,
+        specialCase: ''
+      } as UserLocation;
+      this.newLocations.push(newLocation);
+    }
+
     this.selectedArea = selectedArea;
   }
 
   onLoad() {
-    const jsonObj = [
-      {
-          location : 'US-SC',
-          status : 'visited'
-      }
-    ];
-    for (const obj of jsonObj) {
-      this.changeVisitStatus(obj.location, obj.status);
-    }
-  }
+    console.log('OnLoad');
+    for (const obj of this.userLocations.value) {
+       let status: string;
+       if (obj.visited === 1) {
+         status = 'visited';
+       } else if (obj.toVisit === 1) {
+         status = 'toVisit';
+       }
+       console.log(obj.visited);
+       this.changeVisitStatus(obj.locationId, status, true);
+     }
+   }
 
   ionViewWillLeave() {
 
@@ -331,6 +366,13 @@ export class SelectedLocationPage {
   onChangeHandler(event: any) {
     this.statusToSend = event.detail.value;
     console.log(this.statusToSend);
+  }
+
+  submit() {
+    this.newLocations.forEach(location => {
+      this.userLocationService.userLocationPostUserLocation(location).subscribe((result: UserLocation) => {});
+    });
+    this.modalCtrl.dismiss();
   }
 
   cancel() {

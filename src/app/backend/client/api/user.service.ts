@@ -29,12 +29,12 @@ import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
 import { Configuration } from '../configuration';
 import { async } from 'q';
 
-
+export const InterceptorSkipHeader = 'X-Skip-Interceptor';
 @Injectable()
 export class UserService {
 
-    protected basePath = 'https://localhost:5001';
-    public defaultHeaders = new HttpHeaders();
+    protected basePath = 'https://visitsvc.azurewebsites.net/';
+    public defaultHeaders = new HttpHeaders().set(InterceptorSkipHeader, '');
     public configuration = new Configuration();
     public authSubject = new BehaviorSubject(false);
 
@@ -185,6 +185,10 @@ export class UserService {
 
             return token;
         }
+    }
+
+    public async getToken(): Promise<string> {
+        return await this.storage.get('ACCESS_TOKEN');
     }
 
     /**

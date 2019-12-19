@@ -23,16 +23,17 @@ import { UserLocation } from '../model/userLocation';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
+import { Storage } from '@ionic/storage';
 
 
 @Injectable()
 export class LocationService {
 
-    protected basePath = 'https://localhost:5001';
+    protected basePath = 'https://visitsvc.azurewebsites.net/';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
 
-    constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration) {
+    constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration, storage: Storage) {
         if (basePath) {
             this.basePath = basePath;
         }
@@ -40,6 +41,8 @@ export class LocationService {
             this.configuration = configuration;
             this.basePath = basePath || configuration.basePath || this.basePath;
         }
+
+        this.defaultHeaders.set('Authoriztion', `Bearer ${storage.get('ACCESS_TOKEN')}`);
     }
 
     /**

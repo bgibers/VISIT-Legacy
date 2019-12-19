@@ -37,7 +37,8 @@
     </ion-radio-group>
   </ion-list>
 
-  <ion-button (click)="changeVisitStatus(selectedId,statusToSend)" expand="block" fill="outline" color="success">Update location</ion-button>
+  <ion-button (click)="changeVisitStatus(selectedId,statusToSend,false)" expand="block" fill="outline" color="success">Update location</ion-button>
+  <ion-button (click)="submit()" expand="block" fill="outline" color="success">Save</ion-button>
   <ion-button (click)="cancel()" expand="block" fill="outline" color="danger">Cancel</ion-button>
 
   
