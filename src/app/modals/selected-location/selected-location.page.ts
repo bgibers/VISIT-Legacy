@@ -9,6 +9,7 @@ import am4geodata_canadaLow from '@amcharts/amcharts4-geodata/canadaLow';
 import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
 import { JwtToken, UserService, LocationService, UserLocationService, UserLocation } from '../../backend/client';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { Events } from '@ionic/angular';
 
 @Component({
   selector: 'app-selected-location',
@@ -40,7 +41,8 @@ export class SelectedLocationPage {
               private ref: ChangeDetectorRef,
               private userService: UserService,
               private locationService: LocationService,
-              private userLocationService: UserLocationService) {}
+              private userLocationService: UserLocationService,
+              private events: Events) {}
 
 
   get selectedId() {
@@ -371,6 +373,7 @@ export class SelectedLocationPage {
   submit() {
     this.newLocations.forEach(location => {
       this.userLocationService.userLocationPostUserLocation(location).subscribe((result: UserLocation) => {});
+      this.events.publish('LocationsAdded');
     });
     this.modalCtrl.dismiss();
   }

@@ -8,6 +8,7 @@ import am4geodata_canadaLow from '@amcharts/amcharts4-geodata/canadaLow';
 import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
 import { JwtToken, UserService, LocationService, UserLocation } from '../backend/client';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { Events } from '@ionic/angular';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -26,10 +27,15 @@ export class HomePage {
   private userLocations: BehaviorSubject<UserLocation[]> = new BehaviorSubject([]);
 
   constructor(private zone: NgZone, private userService: UserService,
-              private locationService: LocationService) {}
+              private locationService: LocationService,
+              private events: Events) {
+                events.subscribe('LocationsAdded', () => {
+                  this.ionViewWillEnter();
+                });
+              }
 
   async ionViewDidEnter() {
-    this.onLoad();
+    this.getUserLocations();
   }
 
   async ionViewWillEnter() {

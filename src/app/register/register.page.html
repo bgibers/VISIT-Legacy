@@ -26,14 +26,20 @@
               <ion-input name="password" type="password" placeholder="Password" [(ngModel)]="user.password" required></ion-input>
             </ion-item>
             <ion-item>
-              <ion-input name="confirm" type="password" placeholder="Password again" ngModel required></ion-input>
+              <ion-input name="confirm" type="password" placeholder="Password again" [(ngModel)]="passwordVal" required></ion-input>
             </ion-item>
           </div>
           <div padding>
             <ion-button  size="large" type="submit" [disabled]="form.invalid" expand="block">Register</ion-button>
           </div>
+          <div padding>
+            <ion-button size="large" type="submit" (click)="openLogin()" expand="block">Back to login</ion-button>
+          </div>
         </ion-col>
       </ion-row>
+      <ion-row color="primary" justify-content-center *ngIf="displayError">
+        <ion-text color="danger">{{error}}</ion-text>
+    </ion-row>
     </ion-grid>
   </form>
 </ion-content>
