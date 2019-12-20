@@ -8,7 +8,9 @@ import { UserService, CredentialsViewModel } from '../backend/client';
 })
 export class LoginPage implements OnInit {
 
-  private credentials: CredentialsViewModel = {} as CredentialsViewModel ;
+  public credentials: CredentialsViewModel = {} as CredentialsViewModel ;
+  public error: string;
+  public displayError = false;
 
   constructor(private userService: UserService, private router: Router) { }
 
@@ -17,7 +19,12 @@ export class LoginPage implements OnInit {
 
   public login() {
     this.userService.userLoginUser(this.credentials).subscribe((res) => {
-      this.router.navigateByUrl('home');
+      if (res !== null) {
+        this.router.navigateByUrl('home');
+      } else {
+        this.error = 'Invalid username/password';
+        this.displayError = true;
+      }
     });
   }
 

@@ -26,6 +26,9 @@
               </div>
             </ion-col>
         </ion-row>
+        <ion-row color="primary" justify-content-center *ngIf="displayError">
+          <ion-text color="danger">{{error}}</ion-text>
+      </ion-row>
       </ion-grid>
     </form>
   </ion-content>

@@ -8,15 +8,26 @@ import { UserService, RegistrationUserApi, CredentialsViewModel } from '../backe
 })
 export class RegisterPage implements OnInit {
   public user: RegistrationUserApi =  {} as RegistrationUserApi ;
+  public error: string;
+  public displayError = false;
 
   constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit() {
   }
 
+  public validate() {
+
+  }
+
   public register() {
     this.userService.userRegisterUser(this.user).subscribe((res) => {
-      this.router.navigateByUrl('home');
+      console.log(res);
+      if (res !== null) {
+        this.router.navigateByUrl('home');
+      } else {
+        this.displayError = true;
+      }
     });
   }
 

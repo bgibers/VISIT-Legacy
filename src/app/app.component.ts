@@ -10,6 +10,8 @@ declare var $: any;
   styleUrls: ['app.component.scss']
 })
 export class AppComponent {
+  public hideSidebar = true; // todo once we want the sidebar set this value after authentication
+
   public appPages = [
     {
       title: 'Home',

@@ -10,7 +10,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { NativeHttpModule, NativeHttpBackend, NativeHttpFallback } from '../app/ionic-native-http-connection-backend';
+import { NativeHttpModule } from '../app/ionic-native-http-connection-backend';
 import { SelectedLocationPage } from './modals/selected-location/selected-location.page';
 import { ApiModule } from './backend/client';
 
@@ -31,7 +31,6 @@ import { ApiModule } from './backend/client';
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
-  //  {provide: HttpBackend, useClass: NativeHttpFallback, deps: [Platform, NativeHttpBackend, HttpXhrBackend]}
   ],
   bootstrap: [AppComponent]
 })
