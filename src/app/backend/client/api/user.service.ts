@@ -33,7 +33,7 @@ export const InterceptorSkipHeader = 'X-Skip-Interceptor';
 @Injectable()
 export class UserService {
 
-    protected basePath = 'https://localhost:5001';
+    protected basePath = 'https://visitsvc.azurewebsites.net';
     public defaultHeaders = new HttpHeaders().set(InterceptorSkipHeader, '');
     public configuration = new Configuration();
     public authSubject = new BehaviorSubject(false);

@@ -27,7 +27,7 @@ import { Storage } from '@ionic/storage';
 @Injectable()
 export class UserLocationService {
 
-    protected basePath = 'https://localhost:5001';
+    protected basePath = 'https://visitsvc.azurewebsites.net';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
 
