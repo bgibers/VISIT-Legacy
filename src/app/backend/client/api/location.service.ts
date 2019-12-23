@@ -11,29 +11,30 @@
  */
 /* tslint:disable:no-unused-variable member-ordering */
 
-import { Inject, Injectable, Optional }                      from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,
-         HttpResponse, HttpEvent }                           from '@angular/common/http';
-import { CustomHttpUrlEncodingCodec }                        from '../encoder';
+         HttpResponse, HttpEvent } from '@angular/common/http';
+import { CustomHttpUrlEncodingCodec } from '../encoder';
 
-import { Observable, BehaviorSubject }                                        from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 import { Location } from '../model/location';
 import { UserLocation } from '../model/userLocation';
 
-import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
-import { Configuration }                                     from '../configuration';
+import { COLLECTION_FORMATS } from '../variables';
+import { Configuration } from '../configuration';
 import { Storage } from '@ionic/storage';
-
+import { BASE_PATH } from '../../../../environments/environment';
 
 @Injectable()
 export class LocationService {
 
-    protected basePath = 'https://localhost:5001';
+    protected basePath = BASE_PATH;
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
 
-    constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration, storage: Storage) {
+    constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string,
+                @Optional() configuration: Configuration, storage: Storage) {
         if (basePath) {
             this.basePath = basePath;
         }

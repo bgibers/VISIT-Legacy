@@ -25,15 +25,16 @@ import { JwtToken } from '../model/jwtToken';
 import { RegistrationUserApi } from '../model/registrationUserApi';
 import { User } from '../model/user';
 
-import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
+import { COLLECTION_FORMATS } from '../variables';
 import { Configuration } from '../configuration';
-import { async } from 'q';
+import { BASE_PATH } from '../../../../environments/environment';
+
 
 export const InterceptorSkipHeader = 'X-Skip-Interceptor';
 @Injectable()
 export class UserService {
 
-    protected basePath = 'https://localhost:5001';
+    protected basePath = BASE_PATH;
     public defaultHeaders = new HttpHeaders().set(InterceptorSkipHeader, '');
     public configuration = new Configuration();
     public authSubject = new BehaviorSubject(false);

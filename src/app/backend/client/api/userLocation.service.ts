@@ -20,14 +20,15 @@ import { Observable }                                        from 'rxjs';
 
 import { UserLocation } from '../model/userLocation';
 
-import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
+import { COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 import { Storage } from '@ionic/storage';
+import { BASE_PATH } from '../../../../environments/environment';
 
 @Injectable()
 export class UserLocationService {
 
-    protected basePath = 'https://localhost:5001';
+    protected basePath = BASE_PATH;
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
 
