@@ -16,7 +16,7 @@ import { HttpClient, HttpHeaders, HttpParams,
          HttpResponse, HttpEvent } from '@angular/common/http';
 import { CustomHttpUrlEncodingCodec } from '../encoder';
 
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, from } from 'rxjs';
 
 import { Location } from '../model/location';
 import { UserLocation } from '../model/userLocation';
@@ -34,7 +34,7 @@ export class LocationService {
     public configuration = new Configuration();
 
     constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string,
-                @Optional() configuration: Configuration, storage: Storage) {
+                @Optional() configuration: Configuration, private storage: Storage) {
         if (basePath) {
             this.basePath = basePath;
         }
@@ -42,8 +42,11 @@ export class LocationService {
             this.configuration = configuration;
             this.basePath = basePath || configuration.basePath || this.basePath;
         }
+    }
 
-        this.defaultHeaders.set('Authoriztion', `Bearer ${storage.get('ACCESS_TOKEN')}`);
+    public async setHeaders(token: string) {
+        this.defaultHeaders = this.defaultHeaders.set('Authorization', `Bearer ${token}`);
+        console.log(this.defaultHeaders.get('Authorization'));
     }
 
     /**
@@ -164,7 +167,6 @@ export class LocationService {
         }
 
         let headers = this.defaultHeaders;
-
         // to determine the Accept header
         const httpHeaderAccepts: string[] = [
             'text/plain',
@@ -179,6 +181,8 @@ export class LocationService {
         // to determine the Content-Type header
         const consumes: string[] = [
         ];
+
+        console.log(headers);
 
         return this.httpClient.get<Array<UserLocation>>(`${this.basePath}/Location/User/${encodeURIComponent(String(id))}`,
             {

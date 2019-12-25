@@ -23,7 +23,7 @@ export class HomePage {
   private canadaSeries: am4maps.MapPolygonSeries;
   private russiaSeries: am4maps.MapPolygonSeries;
   private selectedArea: any;
-  private jwtToken: JwtToken;
+  private jwtToken: JwtToken =  {} as JwtToken;
   private userLocations: BehaviorSubject<UserLocation[]> = new BehaviorSubject([]);
 
   constructor(private zone: NgZone, private userService: UserService,
@@ -35,13 +35,17 @@ export class HomePage {
               }
 
   async ionViewDidEnter() {
-    this.getUserLocations();
   }
 
   async ionViewWillEnter() {
     await this.loadMap();
-    this.jwtToken = await this.userService.getUser();
-    this.getUserLocations();
+    await this.userService.getUser().then(
+      async (token) => {
+        this.jwtToken = token;
+        await this.locationService.setHeaders(token.authToken).then(() => {
+          this.getUserLocations();
+        });
+      });
   }
 
   onLoad() {
