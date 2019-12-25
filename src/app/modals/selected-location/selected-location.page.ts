@@ -75,7 +75,7 @@ export class SelectedLocationPage {
 
   async ionViewWillEnter() {
     await this.loadMap();
-    this.jwtToken = await this.userService.getUser();
+    this.jwtToken = await this.userService.getUserToken();
     this.getUserLocations();
   }
 

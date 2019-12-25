@@ -39,7 +39,7 @@ export class HomePage {
 
   async ionViewWillEnter() {
     await this.loadMap();
-    await this.userService.getUser().then(
+    await this.userService.getUserToken().then(
       async (token) => {
         this.jwtToken = token;
         await this.locationService.setHeaders(token.authToken).then(() => {
