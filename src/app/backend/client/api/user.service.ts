@@ -176,11 +176,6 @@ export class UserService {
         return this.authSubject.asObservable();
     }
 
-    public async setHeaders(token: string) {
-        this.defaultHeaders = this.defaultHeaders.set('Authorization', `Bearer ${token}`);
-        console.log(this.defaultHeaders.get('Authorization'));
-    }
-
     public async getUserToken(): Promise<JwtToken> {
         if (this.isLoggedIn) {
             const token: JwtToken = {
@@ -189,7 +184,6 @@ export class UserService {
                 expiresIn: await this.storage.get('EXPIRES_IN')
             } as JwtToken;
 
-            await this.setHeaders(token.authToken);
             return token;
         }
     }

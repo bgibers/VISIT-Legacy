@@ -32,6 +32,7 @@ export class HomePage {
                 events.subscribe('LocationsAdded', () => {
                   this.ionViewWillEnter();
                 });
+                this.selectedArea = new am4maps.MapPolygon();
               }
 
   async ionViewDidEnter() {
@@ -42,9 +43,7 @@ export class HomePage {
     await this.userService.getUserToken().then(
       async (token) => {
         this.jwtToken = token;
-        await this.locationService.setHeaders(token.authToken).then(() => {
-          this.getUserLocations();
-        });
+        this.getUserLocations();
       });
   }
 
@@ -253,7 +252,7 @@ export class HomePage {
     const usaSeries = this.usaSeries;
     const canadaSeries = this.canadaSeries;
     const russiaSeries = this.russiaSeries;
-    let selectedArea;
+    let selectedArea = new am4maps.MapPolygon();
 
     if (locationId.toString().includes('US-')) {
       selectedArea = usaSeries.getPolygonById(locationId);

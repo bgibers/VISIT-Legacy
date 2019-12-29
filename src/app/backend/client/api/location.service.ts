@@ -44,11 +44,6 @@ export class LocationService {
         }
     }
 
-    public async setHeaders(token: string) {
-        this.defaultHeaders = this.defaultHeaders.set('Authorization', `Bearer ${token}`);
-        console.log(this.defaultHeaders.get('Authorization'));
-    }
-
     /**
      * @param consumes string[] mime-types
      * @return true: consumes contains 'multipart/form-data', false: otherwise
