@@ -167,10 +167,10 @@ export class SelectedLocationPage {
         russiaPolygonTemplate.nonScalingStroke = true;
 
         const russiaVisited = russiaPolygonTemplate.states.create('visited');
-        russiaVisited.properties.fill = am4core.color('#0000FF');
+        russiaVisited.properties.fill = am4core.color('#E94F37');
 
         const russiaToVisit = russiaPolygonTemplate.states.create('toVisit');
-        russiaToVisit.properties.fill = am4core.color('#E94F37');
+        russiaToVisit.properties.fill = am4core.color('#0000FF');
 
         console.log(polygonTemplate);
         console.log(worldSeries);

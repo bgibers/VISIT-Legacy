@@ -23,6 +23,8 @@ export class HomePage {
   private canadaSeries: am4maps.MapPolygonSeries;
   private russiaSeries: am4maps.MapPolygonSeries;
   private selectedArea: any;
+  public visitedCount = 0;
+  public futureCount = 0;
   private jwtToken: JwtToken =  {} as JwtToken;
   private userLocations: BehaviorSubject<UserLocation[]> = new BehaviorSubject([]);
 
@@ -49,12 +51,16 @@ export class HomePage {
 
   onLoad() {
     console.log('OnLoad');
+    this.futureCount = 0;
+    this.visitedCount = 0;
     for (const obj of this.userLocations.value) {
        let status: string;
        if (obj.visited === 1) {
          status = 'visited';
+         this.visitedCount++;
        } else if (obj.toVisit === 1) {
          status = 'toVisit';
+         this.futureCount++;
        }
        console.log(obj.visited);
        this.changeVisitStatus(obj.locationId, status);
@@ -148,10 +154,10 @@ export class HomePage {
       russiaPolygonTemplate.nonScalingStroke = true;
 
       const russiaVisited = russiaPolygonTemplate.states.create('visited');
-      russiaVisited.properties.fill = am4core.color('#0000FF');
-
+      russiaVisited.properties.fill = am4core.color('#E94F37');
+      
       const russiaToVisit = russiaPolygonTemplate.states.create('toVisit');
-      russiaToVisit.properties.fill = am4core.color('#E94F37');
+      russiaToVisit.properties.fill = am4core.color('#0000FF');
 
       polygonTemplate.events.on('hit', (ev) => {
           const data = ev.target.dataItem.dataContext;
@@ -282,10 +288,6 @@ export class HomePage {
      selectedArea.setState('visited');
     } else if (status === 'toVisit') {
      selectedArea.setState('toVisit');
-    } else if (status === 'lived') {
-    selectedArea.setState('visited');
-    } else if (status === 'dream') {
-    selectedArea.setState('toVisit');
     }
 
     this.selectedArea = selectedArea;
