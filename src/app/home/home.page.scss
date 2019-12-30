@@ -26,6 +26,24 @@ hr {
   color:#E94F37
 }
 
+.image {
+     height: 5vw; 
+     width: 5vw; 
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 5px gray;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.circle-pic{
+    width:100px;
+    height:100px;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+
 .future-dest {
   color: #0000FF
 }

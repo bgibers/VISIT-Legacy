@@ -43,7 +43,7 @@ export class RegisterPage implements OnInit {
     this.userService.userRegisterUser(this.user).subscribe((res) => {
       console.log(res);
       if (res !== null) {
-        this.router.navigateByUrl('home');
+        this.router.navigateByUrl('login');
       } else {
         this.displayError = true;
         this.error = 'Username is not available';
