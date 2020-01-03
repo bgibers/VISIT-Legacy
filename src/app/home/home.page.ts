@@ -9,6 +9,7 @@ import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
 import { JwtToken, UserService, LocationService, UserLocation } from '../backend/client';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Events } from '@ionic/angular';
+import { LoggedInUser } from '../backend/client/model/loggedInUser';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -23,7 +24,10 @@ export class HomePage {
   private canadaSeries: am4maps.MapPolygonSeries;
   private russiaSeries: am4maps.MapPolygonSeries;
   private selectedArea: any;
-  private jwtToken: JwtToken;
+  public visitedCount = 0;
+  public futureCount = 0;
+  private jwtToken: JwtToken = {} as JwtToken;
+  public user: LoggedInUser =  {} as LoggedInUser;
   private userLocations: BehaviorSubject<UserLocation[]> = new BehaviorSubject([]);
 
   constructor(private zone: NgZone, private userService: UserService,
@@ -32,26 +36,36 @@ export class HomePage {
                 events.subscribe('LocationsAdded', () => {
                   this.ionViewWillEnter();
                 });
+                this.selectedArea = new am4maps.MapPolygon();
               }
 
   async ionViewDidEnter() {
-    this.getUserLocations();
   }
 
   async ionViewWillEnter() {
     await this.loadMap();
-    this.jwtToken = await this.userService.getUser();
-    this.getUserLocations();
+    this.userService.userGetCurrentUser().subscribe(res => {
+      this.user = res;
+    });
+    await this.userService.getUserToken().then(
+      async (token) => {
+        this.jwtToken = token;
+        this.getUserLocations();
+      });
   }
 
   onLoad() {
     console.log('OnLoad');
+    this.futureCount = 0;
+    this.visitedCount = 0;
     for (const obj of this.userLocations.value) {
        let status: string;
        if (obj.visited === 1) {
          status = 'visited';
+         this.visitedCount++;
        } else if (obj.toVisit === 1) {
          status = 'toVisit';
+         this.futureCount++;
        }
        console.log(obj.visited);
        this.changeVisitStatus(obj.locationId, status);
@@ -145,10 +159,10 @@ export class HomePage {
       russiaPolygonTemplate.nonScalingStroke = true;
 
       const russiaVisited = russiaPolygonTemplate.states.create('visited');
-      russiaVisited.properties.fill = am4core.color('#0000FF');
+      russiaVisited.properties.fill = am4core.color('#E94F37');
 
       const russiaToVisit = russiaPolygonTemplate.states.create('toVisit');
-      russiaToVisit.properties.fill = am4core.color('#E94F37');
+      russiaToVisit.properties.fill = am4core.color('#0000FF');
 
       polygonTemplate.events.on('hit', (ev) => {
           const data = ev.target.dataItem.dataContext;
@@ -249,7 +263,7 @@ export class HomePage {
     const usaSeries = this.usaSeries;
     const canadaSeries = this.canadaSeries;
     const russiaSeries = this.russiaSeries;
-    let selectedArea;
+    let selectedArea = new am4maps.MapPolygon();
 
     if (locationId.toString().includes('US-')) {
       selectedArea = usaSeries.getPolygonById(locationId);
@@ -279,10 +293,6 @@ export class HomePage {
      selectedArea.setState('visited');
     } else if (status === 'toVisit') {
      selectedArea.setState('toVisit');
-    } else if (status === 'lived') {
-    selectedArea.setState('visited');
-    } else if (status === 'dream') {
-    selectedArea.setState('toVisit');
     }
 
     this.selectedArea = selectedArea;
@@ -298,7 +308,7 @@ export class HomePage {
   }
 
   async editProfile() {
-    console.log(this.jwtToken.id);
+    // console.log(this.jwtToken.id);
   }
 
 }

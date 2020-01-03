@@ -32,7 +32,9 @@ export class SelectedLocationPage {
   private newLocations: UserLocation[] = [{
     id: 0,
     toVisit: 0,
-    visited: 0
+    visited: 0,
+    userId: '',
+    locationId: undefined
   }];
 
   constructor(private navParams: NavParams,
@@ -75,7 +77,7 @@ export class SelectedLocationPage {
 
   async ionViewWillEnter() {
     await this.loadMap();
-    this.jwtToken = await this.userService.getUser();
+    this.jwtToken = await this.userService.getUserToken();
     this.getUserLocations();
   }
 
@@ -167,10 +169,10 @@ export class SelectedLocationPage {
         russiaPolygonTemplate.nonScalingStroke = true;
 
         const russiaVisited = russiaPolygonTemplate.states.create('visited');
-        russiaVisited.properties.fill = am4core.color('#0000FF');
+        russiaVisited.properties.fill = am4core.color('#E94F37');
 
         const russiaToVisit = russiaPolygonTemplate.states.create('toVisit');
-        russiaToVisit.properties.fill = am4core.color('#E94F37');
+        russiaToVisit.properties.fill = am4core.color('#0000FF');
 
         console.log(polygonTemplate);
         console.log(worldSeries);
@@ -372,7 +374,9 @@ export class SelectedLocationPage {
 
   submit() {
     this.newLocations.forEach(location => {
-      this.userLocationService.userLocationPostUserLocation(location).subscribe((result: UserLocation) => {});
+      if ( location.locationId !== undefined ) {
+        this.userLocationService.userLocationPostUserLocation(location).subscribe((result: UserLocation) => {});
+      }
       this.events.publish('LocationsAdded');
     });
     this.modalCtrl.dismiss();

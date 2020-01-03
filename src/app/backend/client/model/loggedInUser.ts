@@ -9,17 +9,18 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Location } from './location';
-import { User } from './user';
 
 
-export interface UserLocation { 
-    id: number;
-    userId: string;
-    locationId: string;
-    toVisit: number;
-    visited: number;
-    specialCase?: string;
-    location?: Location;
-    user?: User;
+export interface LoggedInUser {
+    jwtToken?: string;
+    userId?: string;
+    fName?: string;
+    lName?: string;
+    userName?: string;
+    birthPlace?: string;
+    residesIn?: string;
+    education?: string;
+    occupationTitle?: string;
+    email?: string;
+    birthday: Date;
 }

@@ -25,15 +25,17 @@ import { JwtToken } from '../model/jwtToken';
 import { RegistrationUserApi } from '../model/registrationUserApi';
 import { User } from '../model/user';
 
-import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
+import { COLLECTION_FORMATS } from '../variables';
 import { Configuration } from '../configuration';
-import { async } from 'q';
+import { BASE_PATH } from '../../../../environments/environment';
+import { LoggedInUser } from '../model/loggedInUser';
+
 
 export const InterceptorSkipHeader = 'X-Skip-Interceptor';
 @Injectable()
 export class UserService {
 
-    protected basePath = 'https://visitsvc.azurewebsites.net';
+    protected basePath = BASE_PATH;
     public defaultHeaders = new HttpHeaders().set(InterceptorSkipHeader, '');
     public configuration = new Configuration();
     public authSubject = new BehaviorSubject(false);
@@ -71,15 +73,15 @@ export class UserService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public userGetCurrentUser(observe?: 'body', reportProgress?: boolean): Observable<User>;
-    public userGetCurrentUser(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<User>>;
-    public userGetCurrentUser(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<User>>;
+    public userGetCurrentUser(observe?: 'body', reportProgress?: boolean): Observable<LoggedInUser>;
+    public userGetCurrentUser(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<LoggedInUser>>;
+    public userGetCurrentUser(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<LoggedInUser>>;
     public userGetCurrentUser(observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
 
         let headers = this.defaultHeaders;
 
         // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
+        let httpHeaderAccepts: string[] = [
             'text/plain',
             'application/json',
             'text/json'
@@ -93,12 +95,12 @@ export class UserService {
         const consumes: string[] = [
         ];
 
-        return this.httpClient.get<User>(`${this.basePath}/User/self`,
+        return this.httpClient.get<LoggedInUser>(`${this.basePath}/User/self`,
             {
                 withCredentials: this.configuration.withCredentials,
-                headers,
-                observe,
-                reportProgress
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
             }
         );
     }
@@ -158,6 +160,12 @@ export class UserService {
                     await this.storage.set('ACCESS_TOKEN', res.authToken);
                     await this.storage.set('USER_ID', res.id);
                     await this.storage.set('EXPIRES_IN', res.expiresIn);
+                    this.userGetCurrentUser().subscribe(async curr => {
+                        curr.userId = res.id;
+                        curr.jwtToken = res.authToken;
+                        console.log(curr);
+                        await this.storage.set('USER', res);
+                    });
                     this.authSubject.next(true);
                 }
             })
@@ -175,7 +183,7 @@ export class UserService {
         return this.authSubject.asObservable();
     }
 
-    public async getUser(): Promise<JwtToken> {
+    public async getUserToken(): Promise<JwtToken> {
         if (this.isLoggedIn) {
             const token: JwtToken = {
                 authToken: await this.storage.get('ACCESS_TOKEN'),
@@ -184,6 +192,13 @@ export class UserService {
             } as JwtToken;
 
             return token;
+        }
+    }
+
+    public async getLoggedInUser(): Promise<LoggedInUser> {
+        if (this.isLoggedIn) {
+            const user: LoggedInUser = await this.storage.get('USER') as LoggedInUser;
+            return user;
         }
     }
 

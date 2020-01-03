@@ -1,4 +1,4 @@
-<app-custom-header headerText='test_user'></app-custom-header>
+<app-custom-header headerText={{user.userName}}></app-custom-header>
 <head>
     <title>Map</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
@@ -11,7 +11,7 @@
       <ion-col size="3.5">
         <ion-row>
           <ion-col>
-            <img  height="100" width="100" src="../assets/defaultuser.png" alt="../assets/defaultuser.png">
+            <img class="circle-pic" height="100" width="100" src="../assets/defaultuser.png" alt="../assets/defaultuser.png">
           </ion-col>
         </ion-row>
         <ion-row>
@@ -24,13 +24,13 @@
         <ion-row>
           <ion-col>
             <ion-text>
-                <h3><strong>200</strong></h3>
+                <h3><strong>xxx</strong></h3>
                 <h6>FOLLOWERS</h6>
             </ion-text>
           </ion-col>
           <ion-col>
             <ion-text>
-                <h3><strong>200</strong></h3>
+                <h3><strong>xxx</strong></h3>
                 <h6>FOLLOWING</h6>
             </ion-text>       
           </ion-col>
@@ -43,23 +43,23 @@
         </ion-row>
         <ion-row>
           <p class="user-stats">
-          Test User <br>
-          Born in Charleston, SC <br>
-          Lives in Charleston, SC <br>
-          Clemson University | Visit Co-Founder <br>
+          {{user.fName}} {{user.lName}} <br>
+          Born in {{user.birthPlace}} <br>
+          Lives in {{user.residesIn}} <br>
+          {{user.education}} | {{user.occupationTitle}} <br>
          </p>
         </ion-row>
         <ion-row>
           <hr>
           <ion-col>
             <ion-text>
-              <h5><strong>10</strong></h5>
+            <h5><strong>{{visitedCount}}</strong></h5>
               <h6 class='visited'>COUNTRIES VISITED</h6>
             </ion-text> 
           </ion-col>
           <ion-col>
             <ion-text>
-              <h5><strong>10</strong></h5>
+            <h5><strong>{{futureCount}}</strong></h5>
               <h6 class="future-dest">FUTURE DESTINATIONS</h6>
             </ion-text>
           </ion-col>
