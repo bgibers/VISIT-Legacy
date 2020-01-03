@@ -32,7 +32,9 @@ export class SelectedLocationPage {
   private newLocations: UserLocation[] = [{
     id: 0,
     toVisit: 0,
-    visited: 0
+    visited: 0,
+    userId: '',
+    locationId: undefined
   }];
 
   constructor(private navParams: NavParams,
@@ -372,7 +374,9 @@ export class SelectedLocationPage {
 
   submit() {
     this.newLocations.forEach(location => {
-      this.userLocationService.userLocationPostUserLocation(location).subscribe((result: UserLocation) => {});
+      if ( location.locationId !== undefined ) {
+        this.userLocationService.userLocationPostUserLocation(location).subscribe((result: UserLocation) => {});
+      }
       this.events.publish('LocationsAdded');
     });
     this.modalCtrl.dismiss();

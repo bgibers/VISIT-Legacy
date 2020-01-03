@@ -1,4 +1,4 @@
-<app-custom-header headerText='test_user'></app-custom-header>
+<app-custom-header headerText={{user.userName}}></app-custom-header>
 <head>
     <title>Map</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
@@ -43,10 +43,10 @@
         </ion-row>
         <ion-row>
           <p class="user-stats">
-          Test User <br>
-          Born in Charleston, SC <br>
-          Lives in Charleston, SC <br>
-          Clemson University | Visit Co-Founder <br>
+          {{user.fName}} {{user.lName}} <br>
+          Born in {{user.birthPlace}} <br>
+          Lives in {{user.residesIn}} <br>
+          {{user.education}} | {{user.occupationTitle}} <br>
          </p>
         </ion-row>
         <ion-row>

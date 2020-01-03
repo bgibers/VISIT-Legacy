@@ -9,6 +9,7 @@ import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
 import { JwtToken, UserService, LocationService, UserLocation } from '../backend/client';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Events } from '@ionic/angular';
+import { LoggedInUser } from '../backend/client/model/loggedInUser';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -25,7 +26,8 @@ export class HomePage {
   private selectedArea: any;
   public visitedCount = 0;
   public futureCount = 0;
-  private jwtToken: JwtToken =  {} as JwtToken;
+  private jwtToken: JwtToken = {} as JwtToken;
+  public user: LoggedInUser =  {} as LoggedInUser;
   private userLocations: BehaviorSubject<UserLocation[]> = new BehaviorSubject([]);
 
   constructor(private zone: NgZone, private userService: UserService,
@@ -42,6 +44,9 @@ export class HomePage {
 
   async ionViewWillEnter() {
     await this.loadMap();
+    this.userService.userGetCurrentUser().subscribe(res => {
+      this.user = res;
+    });
     await this.userService.getUserToken().then(
       async (token) => {
         this.jwtToken = token;
@@ -155,7 +160,7 @@ export class HomePage {
 
       const russiaVisited = russiaPolygonTemplate.states.create('visited');
       russiaVisited.properties.fill = am4core.color('#E94F37');
-      
+
       const russiaToVisit = russiaPolygonTemplate.states.create('toVisit');
       russiaToVisit.properties.fill = am4core.color('#0000FF');
 
@@ -303,7 +308,7 @@ export class HomePage {
   }
 
   async editProfile() {
-    console.log(this.jwtToken.id);
+    // console.log(this.jwtToken.id);
   }
 
 }
