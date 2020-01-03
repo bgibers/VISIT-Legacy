@@ -6,7 +6,7 @@ import { SelectedLocationPage } from '../modals/selected-location/selected-locat
   templateUrl: './custom-footer.component.html',
   styleUrls: ['./custom-footer.component.scss'],
 })
-export class CustomFooterComponent{
+export class CustomFooterComponent {
 
   @Input() selectedArea: any;
   constructor(public modalController: ModalController) { }
