@@ -22,7 +22,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [SelectedLocationPage, CustomFooterComponent],
+  declarations: [SelectedLocationPage],
   exports: [SelectedLocationPage]
 
 })
