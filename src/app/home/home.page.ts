@@ -10,6 +10,7 @@ import { JwtToken, UserService, LocationService, UserLocation } from '../backend
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Events } from '@ionic/angular';
 import { LoggedInUser } from '../backend/client/model/loggedInUser';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -31,7 +32,7 @@ export class HomePage {
   private userLocations: BehaviorSubject<UserLocation[]> = new BehaviorSubject([]);
 
   constructor(private zone: NgZone, private userService: UserService,
-              private locationService: LocationService,
+              private locationService: LocationService, private router: Router,
               private events: Events) {
                 events.subscribe('LocationsAdded', () => {
                   this.ionViewWillEnter();
@@ -309,6 +310,15 @@ export class HomePage {
 
   async editProfile() {
     // console.log(this.jwtToken.id);
+  }
+
+  async logout() {
+    await this.userService.logout().then(() => {
+      this.user = undefined;
+      this.jwtToken = undefined;
+      console.log(this.userService.getLoggedInUser);
+      this.router.navigateByUrl('login');
+    });
   }
 
 }

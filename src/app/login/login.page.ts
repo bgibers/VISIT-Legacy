@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { UserService, CredentialsViewModel } from '../backend/client';
 @Component({
   selector: 'app-login',
@@ -11,8 +11,17 @@ export class LoginPage implements OnInit {
   public credentials: CredentialsViewModel = {} as CredentialsViewModel ;
   public error: string;
   public displayError = false;
+  public displayNewUser = false;
+  public username = '';
 
-  constructor(private userService: UserService, private router: Router) { }
+  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      if (this.router.getCurrentNavigation().extras.state) {
+        this.displayNewUser = true;
+        this.username = this.router.getCurrentNavigation().extras.state.newUser;
+      }
+    });
+   }
 
   ngOnInit() {
   }

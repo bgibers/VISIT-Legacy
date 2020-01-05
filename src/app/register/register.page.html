@@ -20,7 +20,8 @@
               <ion-input name="email" type="email" placeholder="your@email.com" [(ngModel)]="user.email" required></ion-input>
             </ion-item>
             <ion-item>
-              <ion-input name="birthday" type="date" placeholder="01/01/1995" [(ngModel)]="user.birthday" required></ion-input>
+                <ion-label>Birthday</ion-label>
+                <ion-datetime name="birthday" displayFormat="MMM DD YYYY" placeholder="Birthday" [(ngModel)]="user.birthday" required></ion-datetime>
             </ion-item>
             <ion-item>
               <ion-input name="birthplace" type="text" placeholder="Birthplace" [(ngModel)]="user.birthPlace" required></ion-input>

@@ -16,8 +16,9 @@
         </ion-row>
         <ion-row>
           <ion-col>
-              <ion-button color="dark"fill="outline" expand="block" (click)="editProfile()" size="small">Edit Profile</ion-button>
-          </ion-col>
+              <ion-button color="dark" fill="outline" expand="block" (click)="editProfile()" size="small">Edit Profile</ion-button>
+              <ion-button color="dark" fill="outline" expand="block" (click)="logout()" size="small">Logout</ion-button>
+        </ion-col>
         </ion-row>
       </ion-col>
       <ion-col>
@@ -71,10 +72,15 @@
             <div id="chartdiv" onload="onLoad()"></div>
       </ion-col>
     </ion-row>
-  <ion-row>
-        <ion-col align-self-end>Hometown</ion-col>
-        <ion-col align-self-end>Dream destination</ion-col>
-        <ion-col align-self-end>Next visit</ion-col>
+    <ion-row>
+      <ion-col class="center-any-object about-section">
+        <ion-text> About {{user.fName}} </ion-text>
+      </ion-col>
+    </ion-row>
+  <ion-row >
+        <ion-col class="center-any-object" align-self-end>Hometown</ion-col>
+        <ion-col class="center-any-object" align-self-end>Dream visit</ion-col>
+        <ion-col class="center-any-object" align-self-end>Next visit</ion-col>
   </ion-row>
 </ion-grid>
 </ion-content> 

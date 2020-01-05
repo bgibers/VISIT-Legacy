@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from  '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 import { UserService, RegistrationUserApi, CredentialsViewModel } from '../backend/client';
 @Component({
   selector: 'app-register',
@@ -43,7 +43,7 @@ export class RegisterPage implements OnInit {
     this.userService.userRegisterUser(this.user).subscribe((res) => {
       console.log(res);
       if (res !== null) {
-        this.router.navigateByUrl('login');
+        this.openLoginWSuccess();
       } else {
         this.displayError = true;
         this.error = 'Username is not available';
@@ -52,4 +52,13 @@ export class RegisterPage implements OnInit {
   }
   }
 
+  private openLoginWSuccess() {
+    const navigationExtras: NavigationExtras = {
+      state: {
+        newUser: this.user.userName
+      }
+    };
+    this.router.navigate(['/login'], navigationExtras);
+  }
 }
+

@@ -8,7 +8,7 @@
             </div>
             <div padding>
               <ion-item>
-                <ion-input name="email" type="email" placeholder="your@email.com" [(ngModel)]="credentials.userName" required></ion-input>
+                <ion-input name="email" type="email" placeholder="Username or Email" [(ngModel)]="credentials.userName" required></ion-input>
               </ion-item>
               <ion-item>
                 <ion-input name="password" type="password" placeholder="Password" [(ngModel)]="credentials.password" required></ion-input>
@@ -22,13 +22,16 @@
         <ion-row color="primary" justify-content-center>
             <ion-col align-self-center size-md="6" size-lg="5" size-xs="12">
               <div padding>
-                <ion-button size="large" type="submit" (click)="openRegister()" expand="block">Register</ion-button>
+                <ion-button size="large" (click)="openRegister()" expand="block">Register</ion-button>
               </div>
             </ion-col>
         </ion-row>
         <ion-row color="primary" justify-content-center *ngIf="displayError">
           <ion-text color="danger">{{error}}</ion-text>
       </ion-row>
+      <ion-row color="primary" justify-content-center *ngIf="displayNewUser">
+        <ion-text color="success">User {{username}} created!</ion-text>
+    </ion-row>
       </ion-grid>
     </form>
   </ion-content>

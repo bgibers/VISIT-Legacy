@@ -16,7 +16,8 @@ import { ApiModule } from './backend/client';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SelectedLocationPage
   ],
   entryComponents: [SelectedLocationPage],
   imports: [
