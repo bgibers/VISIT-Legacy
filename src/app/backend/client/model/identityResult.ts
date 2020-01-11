@@ -9,19 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { IdentityError } from './identityError';
 
 
-export interface LoggedInUser {
-    jwtToken?: string;
-    userId?: string;
-    fName?: string;
-    lName?: string;
-    avi?: string;
-    userName?: string;
-    birthPlace?: string;
-    residesIn?: string;
-    education?: string;
-    occupationTitle?: string;
-    email?: string;
-    birthday: Date;
+export interface IdentityResult { 
+    succeeded: boolean;
+    errors?: Array<IdentityError>;
 }

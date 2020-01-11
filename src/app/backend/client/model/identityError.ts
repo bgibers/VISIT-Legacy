@@ -11,17 +11,7 @@
  */
 
 
-export interface LoggedInUser {
-    jwtToken?: string;
-    userId?: string;
-    fName?: string;
-    lName?: string;
-    avi?: string;
-    userName?: string;
-    birthPlace?: string;
-    residesIn?: string;
-    education?: string;
-    occupationTitle?: string;
-    email?: string;
-    birthday: Date;
+export interface IdentityError { 
+    code?: string;
+    description?: string;
 }

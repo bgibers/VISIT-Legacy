@@ -29,6 +29,7 @@ import { COLLECTION_FORMATS } from '../variables';
 import { Configuration } from '../configuration';
 import { BASE_PATH } from '../../../../environments/environment';
 import { LoggedInUser } from '../model/loggedInUser';
+import { IdentityResult } from '../model/identityResult';
 
 
 export const InterceptorSkipHeader = 'X-Skip-Interceptor';
@@ -85,7 +86,7 @@ export class UserService {
         let headers = this.defaultHeaders;
 
         // to determine the Accept header
-        let httpHeaderAccepts: string[] = [
+        const httpHeaderAccepts: string[] = [
             'text/plain',
             'application/json',
             'text/json'
@@ -102,9 +103,9 @@ export class UserService {
         return this.httpClient.get<LoggedInUser>(`${this.basePath}/User/self`,
             {
                 withCredentials: this.configuration.withCredentials,
-                headers: headers,
-                observe: observe,
-                reportProgress: reportProgress
+                headers,
+                observe,
+                reportProgress
             }
         );
     }
@@ -211,7 +212,7 @@ export class UserService {
         this.storage.get('USER').then((response) => {
           if (response) {
             this.authSubject.next(true);
-            console.log(response)
+            console.log(response);
           }
         });
       }
@@ -262,6 +263,64 @@ export class UserService {
 
         return this.httpClient.post<User>(`${this.basePath}/User`,
             user,
+            {
+                withCredentials: this.configuration.withCredentials,
+                headers,
+                observe,
+                reportProgress
+            }
+        );
+    }
+
+        /**
+     *
+     *
+     * @param image
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public userUpdateProfileImage(image?: Blob, observe?: 'body', reportProgress?: boolean): Observable<IdentityResult>;
+    public userUpdateProfileImage(image?: Blob, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<IdentityResult>>;
+    public userUpdateProfileImage(image?: Blob, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<IdentityResult>>;
+    public userUpdateProfileImage(image?: Blob, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+
+
+        let headers = this.defaultHeaders;
+
+        // to determine the Accept header
+        const httpHeaderAccepts: string[] = [
+            'text/plain',
+            'application/json',
+            'text/json'
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected != undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'multipart/form-data'
+        ];
+
+        const canConsumeForm = this.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): void; };
+        let useForm = false;
+        const convertFormParamsToString = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        }
+
+        formParams.append('image',  image as any);
+
+        return this.httpClient.post<IdentityResult>(`${this.basePath}/User/update/profileimage`,
+            convertFormParamsToString ? formParams.toString() : formParams,
             {
                 withCredentials: this.configuration.withCredentials,
                 headers,
