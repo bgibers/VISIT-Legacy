@@ -12,8 +12,8 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { NativeHttpModule } from '../app/ionic-native-http-connection-backend';
 import { SelectedLocationPage } from './modals/selected-location/selected-location.page';
-import { ApiModule } from './backend/client';
-
+import { ApiModule, UserService } from './backend/client';
+import { AuthGuard } from './backend/services/AuthGuard.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,6 +30,8 @@ import { ApiModule } from './backend/client';
   providers: [
     StatusBar,
     SplashScreen,
+    AuthGuard,
+    UserService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     {
       provide: HTTP_INTERCEPTORS,

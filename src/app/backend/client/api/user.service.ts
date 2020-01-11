@@ -16,7 +16,7 @@ import { HttpClient, HttpHeaders, HttpParams,
          HttpResponse, HttpEvent } from '@angular/common/http';
 import { CustomHttpUrlEncodingCodec } from '../encoder';
 import { Storage } from '@ionic/storage';
-
+import { Platform } from '@ionic/angular';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -42,6 +42,7 @@ export class UserService {
 
     constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string,
                 private storage: Storage,
+                private platform: Platform,
                 @Optional() configuration: Configuration) {
         if (basePath) {
             this.basePath = basePath;
@@ -50,6 +51,9 @@ export class UserService {
             this.configuration = configuration;
             this.basePath = basePath || configuration.basePath || this.basePath;
         }
+        this.platform.ready().then(() => {
+            this.ifLoggedIn();
+          });
     }
 
     /**
@@ -175,12 +179,13 @@ export class UserService {
     public async logout() {
         await this.storage.remove('ACCESS_TOKEN');
         await this.storage.remove('USER_ID');
+        await this.storage.remove('USER');
         await this.storage.remove('EXPIRES_IN');
         this.authSubject.next(false);
     }
 
     public isLoggedIn() {
-        return this.authSubject.asObservable();
+        return this.authSubject.value;
     }
 
     public async getUserToken(): Promise<JwtToken> {
@@ -201,6 +206,15 @@ export class UserService {
             return user;
         }
     }
+
+    ifLoggedIn() {
+        this.storage.get('USER').then((response) => {
+          if (response) {
+            this.authSubject.next(true);
+            console.log(response)
+          }
+        });
+      }
 
     public async getToken(): Promise<string> {
         return await this.storage.get('ACCESS_TOKEN');
