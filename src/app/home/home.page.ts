@@ -8,9 +8,11 @@ import am4geodata_canadaLow from '@amcharts/amcharts4-geodata/canadaLow';
 import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
 import { JwtToken, UserService, LocationService, UserLocation } from '../backend/client';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { Events } from '@ionic/angular';
 import { LoggedInUser } from '../backend/client/model/loggedInUser';
 import { Router } from '@angular/router';
+import { LoadingController } from '@ionic/angular';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -29,11 +31,13 @@ export class HomePage {
   public futureCount = 0;
   private jwtToken: JwtToken = {} as JwtToken;
   public user: LoggedInUser =  {} as LoggedInUser;
+  public profilePic: any;
   private userLocations: BehaviorSubject<UserLocation[]> = new BehaviorSubject([]);
+  private loading: any;
 
   constructor(private zone: NgZone, private userService: UserService,
               private locationService: LocationService, private router: Router,
-              private events: Events) {
+              private events: Events, public loadingController: LoadingController) {
                 events.subscribe('LocationsAdded', () => {
                   this.ionViewWillEnter();
                 });
@@ -44,15 +48,38 @@ export class HomePage {
   }
 
   async ionViewWillEnter() {
+    await this.presentLoading();
     await this.loadMap();
-    this.userService.userGetCurrentUser().subscribe(res => {
+    this.userService.userGetCurrentUser()
+    .pipe(
+      finalize(async () => {
+        await this.userService.getUserToken().then(
+          async (token) => {
+            this.jwtToken = token;
+            this.getUserLocations();
+          });
+          // Hide the loading spinner on success or error
+        await this.loading.dismiss();
+      })
+    )
+    .subscribe(res => {
       this.user = res;
+
+      if (res.avi === null) {
+        this.profilePic = '../assets/defaultuser.png';
+      } else {
+        this.profilePic = 'data:image/jpeg;base64,' + res.avi;
+      }
     });
-    await this.userService.getUserToken().then(
-      async (token) => {
-        this.jwtToken = token;
-        this.getUserLocations();
-      });
+  }
+
+  async presentLoading() {
+    // Prepare a loading controller
+    this.loading = await this.loadingController.create({
+        message: 'Loading...'
+    });
+    // Present the loading controller
+    await this.loading.present();
   }
 
   onLoad() {

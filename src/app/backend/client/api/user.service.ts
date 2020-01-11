@@ -168,7 +168,6 @@ export class UserService {
                     this.userGetCurrentUser().subscribe(async curr => {
                         curr.userId = res.id;
                         curr.jwtToken = res.authToken;
-                        console.log(curr);
                         await this.storage.set('USER', res);
                     });
                     this.authSubject.next(true);

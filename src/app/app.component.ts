@@ -46,7 +46,6 @@ export class AppComponent {
 
       this.userService.authSubject.subscribe(state => {
         console.log('Initialize app')
-        console.log(state);
         if (state) {
           this.router.navigate(['home']);
         } else {

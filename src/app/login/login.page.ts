@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService, CredentialsViewModel } from '../backend/client';
 @Component({
@@ -6,8 +6,7 @@ import { UserService, CredentialsViewModel } from '../backend/client';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage implements OnInit {
-
+export class LoginPage {
   public credentials: CredentialsViewModel = {} as CredentialsViewModel ;
   public error: string;
   public displayError = false;
@@ -23,9 +22,6 @@ export class LoginPage implements OnInit {
     });
    }
 
-  ngOnInit() {
-  }
-
   public login() {
     this.userService.userLoginUser(this.credentials).subscribe((res) => {
       if (res !== null) {
@@ -40,5 +36,7 @@ export class LoginPage implements OnInit {
   public openRegister() {
       this.router.navigateByUrl('register');
   }
+
+  
 
 }

@@ -177,8 +177,6 @@ export class LocationService {
         const consumes: string[] = [
         ];
 
-        console.log(headers);
-
         return this.httpClient.get<Array<UserLocation>>(`${this.basePath}/Location/User/${encodeURIComponent(String(id))}`,
             {
                 withCredentials: this.configuration.withCredentials,

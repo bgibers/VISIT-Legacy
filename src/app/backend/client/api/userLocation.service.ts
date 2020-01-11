@@ -198,7 +198,6 @@ export class UserLocationService {
         }
 
         let headers = this.defaultHeaders;
-        console.log(this.storage.get('ACCESS_TOKEN'));
         headers.set('Authoriztion', `Bearer ${this.storage.get('ACCESS_TOKEN')}`);
 
         // to determine the Accept header
