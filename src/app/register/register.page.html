@@ -1,4 +1,166 @@
-<ion-content  color="light">
+<ion-content color="light">
+  <mat-vertical-stepper  #stepper>
+    <mat-step [stepControl]="basicInfoForm">
+      <form [formGroup]="basicInfoForm">
+        <ng-template matStepLabel>Basic Information</ng-template>
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="First Name"
+            formControlName="fName"
+            required
+          />
+        </mat-form-field>
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="Last Name"
+            formControlName="lName"
+            required
+          />
+        </mat-form-field>
+        <mat-form-field>
+          <input
+            matInput
+            readonly
+            [min]="minDate"
+            [max]="maxDate"
+            [matDatepicker]="picker"
+            placeholder="Date Of Birth"
+            formControlName="birthday"
+            required
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker touchUi #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field>
+          <input
+            matInput
+            type="email"
+            placeholder="Email"
+            formControlName="email"
+            required
+          />
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="userInfoForm" label="User Information">
+      <form [formGroup]="userInfoForm">
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="Username"
+            formControlName="username"
+            required
+          />
+        </mat-form-field>
+        <mat-form-field>
+          <input
+            matInput
+            type="password"
+            placeholder="Password"
+            formControlName="password"
+            required
+          />
+          <mat-error>
+            Passwords must be between 6-12 characters
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input
+            matInput
+            type="password"
+            placeholder="Confirm password"
+            formControlName="passwordConfirm"
+            required
+          />
+        </mat-form-field>
+        <ion-text *ngIf="displayError" color="danger">
+          Passwords do not match
+        </ion-text>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button (click)="validatePassword(userInfoForm,stepper)">
+            Next
+          </button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="birthForm" label="Birthplace">
+      <form [formGroup]="birthForm">
+        <mat-form-field>
+          <input
+            type="text"
+            placeholder="Birthplace"
+            matInput
+            formControlName="birthplace"
+            [matAutocomplete]="autoBirth"
+          />
+          <mat-autocomplete #autoBirth="matAutocomplete">
+            <mat-option
+              *ngFor="let option of birthplaceOptions | async"
+              [value]="option.name"
+            >
+              {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button>
+            Next
+          </button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="residenceForm" label="Current residency">
+      <form [formGroup]="residenceForm">
+        <mat-form-field>
+          <input
+            type="text"
+            placeholder="Current residency"
+            matInput
+            formControlName="residesIn"
+            [matAutocomplete]="autoResidence"
+          />
+          <mat-autocomplete #autoResidence="matAutocomplete">
+            <mat-option
+              *ngFor="let option of resideOptions | async"
+              [value]="option.name"
+            >
+              {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button>
+            Next
+          </button>
+        </div>
+      </form>
+    </mat-step>
+  </mat-vertical-stepper>
+  <!-- <div padding>
+    <ion-button  size="large" type="submit" [disabled]="canRegister" expand="block">Register</ion-button>
+  </div> -->
+  <div padding>
+    <ion-button size="large" type="submit" (click)="openLogin()" expand="block"
+      >Back to login</ion-button
+    >
+  </div>
+  <ion-row color="primary" justify-content-center *ngIf="displayError">
+    <ion-text color="danger">{{error}}</ion-text>
+  </ion-row>
+</ion-content>
+
+<!---
   <form  #form="ngForm" (ngSubmit)="register()">
     <ion-grid>
       <ion-row color="light" justify-content-center>
@@ -55,5 +217,4 @@
     </ion-row>
     </ion-grid>
   </form>
-</ion-content>
-
+-->

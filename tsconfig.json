@@ -1,5 +1,5 @@
 {
-  "compileOnSave": false,
+  "compileOnSave": true,
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
@@ -17,9 +17,12 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "resolveJsonModule": true,
+    "esModuleInterop": true 
   },
   "angularCompilerOptions": {
+    "resolveJsonModule": true,
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true
   }

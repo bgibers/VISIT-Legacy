@@ -14,6 +14,9 @@ import { NativeHttpModule } from '../app/ionic-native-http-connection-backend';
 import { SelectedLocationPage } from './modals/selected-location/selected-location.page';
 import { ApiModule, UserService } from './backend/client';
 import { AuthGuard } from './backend/services/AuthGuard.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LocationSelector } from './objects/location.selector';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,13 +28,15 @@ import { AuthGuard } from './backend/services/AuthGuard.service';
       IonicModule.forRoot(),
       AppRoutingModule,
       ApiModule,
-      NativeHttpModule
+      NativeHttpModule,
+      BrowserAnimationsModule,
     ],
   providers: [
     StatusBar,
     SplashScreen,
     AuthGuard,
     UserService,
+    LocationSelector,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     {
       provide: HTTP_INTERCEPTORS,

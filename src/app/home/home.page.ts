@@ -344,7 +344,7 @@ export class HomePage {
       this.user = undefined;
       this.jwtToken = undefined;
       console.log(this.userService.getLoggedInUser);
-      this.router.navigateByUrl('login');
+      this.router.navigateByUrl('login', { replaceUrl: true });
     });
   }
 
