@@ -11,7 +11,7 @@
  */
 
 
-export interface RegistrationUserApi { 
+export interface RegistrationUserApi {
     fName?: string;
     lName?: string;
     userName?: string;

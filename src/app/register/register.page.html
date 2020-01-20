@@ -1,5 +1,6 @@
 <ion-content color="light">
-  <mat-vertical-stepper  #stepper>
+  <!-- <mat-vertical-stepper  [linear]="true" #stepper> -->
+    <mat-vertical-stepper   #stepper>
     <mat-step [stepControl]="basicInfoForm">
       <form [formGroup]="basicInfoForm">
         <ng-template matStepLabel>Basic Information</ng-template>
@@ -46,6 +47,7 @@
           />
         </mat-form-field>
         <div>
+          <button mat-button (click)="basicInfoForm.reset()">Clear</button>
           <button mat-button matStepperNext>Next</button>
         </div>
       </form>
@@ -85,6 +87,7 @@
           Passwords do not match
         </ion-text>
         <div>
+          <button mat-button (click)="userInfoForm.reset()">Clear</button>
           <button mat-button matStepperPrevious>Back</button>
           <button mat-button (click)="validatePassword(userInfoForm,stepper)">
             Next
@@ -99,12 +102,29 @@
             type="text"
             placeholder="Birthplace"
             matInput
-            formControlName="birthplace"
+            formControlName="country"
+            [matAutocomplete]="autoBirth"
+          />
+          <mat-autocomplete #autoBirth="matAutocomplete" (optionSelected)="checkInputValue()">
+            <mat-option
+              *ngFor="let option of birthCountryObservable | async"
+              [value]="option.name"
+            >
+              {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field *ngIf="displayBirthState">
+          <input
+            type="text"
+            placeholder="State"
+            matInput
+            formControlName="state"
             [matAutocomplete]="autoBirth"
           />
           <mat-autocomplete #autoBirth="matAutocomplete">
             <mat-option
-              *ngFor="let option of birthplaceOptions | async"
+              *ngFor="let option of birthStateObservable | async"
               [value]="option.name"
             >
               {{option.name}}
@@ -112,8 +132,9 @@
           </mat-autocomplete>
         </mat-form-field>
         <div>
+          <button mat-button (click)="birthForm.reset()">Clear</button>
           <button mat-button matStepperPrevious>Back</button>
-          <button mat-button>
+          <button mat-button matStepperNext>
             Next
           </button>
         </div>
@@ -126,12 +147,29 @@
             type="text"
             placeholder="Current residency"
             matInput
-            formControlName="residesIn"
+            formControlName="country"
             [matAutocomplete]="autoResidence"
           />
-          <mat-autocomplete #autoResidence="matAutocomplete">
+          <mat-autocomplete #autoResidence="matAutocomplete" (optionSelected)="checkInputValue()">
             <mat-option
-              *ngFor="let option of resideOptions | async"
+              *ngFor="let option of residenceCountryObservable | async"
+              [value]="option.name"
+            >
+              {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field *ngIf="displayResidenceState">
+          <input
+            type="text"
+            placeholder="State"
+            matInput
+            formControlName="state"
+            [matAutocomplete]="autoBirth"
+          />
+          <mat-autocomplete #autoBirth="matAutocomplete">
+            <mat-option
+              *ngFor="let option of residenceStateObservable | async"
               [value]="option.name"
             >
               {{option.name}}
@@ -139,21 +177,45 @@
           </mat-autocomplete>
         </mat-form-field>
         <div>
+          <button mat-button (click)="residenceForm.reset()">Clear</button>
           <button mat-button matStepperPrevious>Back</button>
-          <button mat-button>
+          <button mat-button matStepperNext>
             Next
           </button>
         </div>
       </form>
     </mat-step>
+    <mat-step [stepControl]="titleForm">
+      <form [formGroup]="titleForm">
+        <ng-template matStepLabel>Education and employment</ng-template>
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="Education"
+            formControlName="education"
+            required
+          />
+        </mat-form-field>
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="Current job title"
+            formControlName="occupationTitle"
+            required
+          />
+        </mat-form-field>
+        <div>
+          <button mat-button (click)="basicInfoForm.reset()">Clear</button>
+          <button mat-button matStepperPrevious>Back</button>
+        </div>
+      </form>
+    </mat-step>
   </mat-vertical-stepper>
-  <!-- <div padding>
-    <ion-button  size="large" type="submit" [disabled]="canRegister" expand="block">Register</ion-button>
-  </div> -->
   <div padding>
-    <ion-button size="large" type="submit" (click)="openLogin()" expand="block"
-      >Back to login</ion-button
-    >
+    <ion-button *ngIf="canRegister" size="large" type="submit" (click)="register()" expand="block">Register</ion-button>
+  </div>
+  <div padding>
+    <ion-button size="large" type="submit" (click)="openLogin()" expand="block" >Back to login</ion-button>
   </div>
   <ion-row color="primary" justify-content-center *ngIf="displayError">
     <ion-text color="danger">{{error}}</ion-text>

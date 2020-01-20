@@ -1,4 +1,4 @@
-import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators, FormControlName } from '@angular/forms';
 
 export class AppCustomDirective extends Validators {
 
@@ -9,5 +9,4 @@ export class AppCustomDirective extends Validators {
       return { invalidPassCriteria: true };
     }
   }
-
 }
