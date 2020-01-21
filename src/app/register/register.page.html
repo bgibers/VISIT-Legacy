@@ -1,7 +1,6 @@
 <ion-content color="light">
-  <!-- <mat-vertical-stepper  [linear]="true" #stepper> -->
-    <mat-vertical-stepper   #stepper>
-    <mat-step [stepControl]="basicInfoForm">
+  <mat-vertical-stepper  [linear]="true" #stepper>
+\    <mat-step [stepControl]="basicInfoForm">
       <form [formGroup]="basicInfoForm">
         <ng-template matStepLabel>Basic Information</ng-template>
         <mat-form-field>
@@ -211,15 +210,15 @@
       </form>
     </mat-step>
   </mat-vertical-stepper>
+  <ion-row color="primary" justify-content-center *ngIf="displayError">
+    <ion-text color="danger">{{error}}</ion-text>
+  </ion-row>
   <div padding>
-    <ion-button *ngIf="canRegister" size="large" type="submit" (click)="register()" expand="block">Register</ion-button>
+    <ion-button [disabled]="!canRegister" size="large" type="submit" (click)="register()" expand="block">Register</ion-button>
   </div>
   <div padding>
     <ion-button size="large" type="submit" (click)="openLogin()" expand="block" >Back to login</ion-button>
   </div>
-  <ion-row color="primary" justify-content-center *ngIf="displayError">
-    <ion-text color="danger">{{error}}</ion-text>
-  </ion-row>
 </ion-content>
 
 <!---

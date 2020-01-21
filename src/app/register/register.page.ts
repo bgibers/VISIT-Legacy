@@ -29,13 +29,11 @@ export class RegisterPage implements OnInit {
 
   public passwordVal: string;
   public displayError = false;
-  public canRegister = false;
-  
+
   public basicInfoForm: FormGroup;
   public userInfoForm: FormGroup;
   public birthForm: FormGroup;
   public residenceForm: FormGroup;
-  public dreamForm: FormGroup;
   public titleForm: FormGroup;
 
   public countryOptions: Array<Country>;
@@ -89,10 +87,6 @@ export class RegisterPage implements OnInit {
       state: ['']
     });
 
-    this.dreamForm = this.fb.group({
-      dreamDestination: ['', Validators.required]
-    });
-
     this.titleForm = this.fb.group({
       education: ['', Validators.required],
       occupationTitle: ['', Validators.required]
@@ -136,6 +130,17 @@ export class RegisterPage implements OnInit {
     return this.stateOptions.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
+  get canRegister(): boolean {
+    if (this.titleForm.status === 'VALID'
+        && this.basicInfoForm.status === 'VALID'
+        && this.userInfoForm.status === 'VALID'
+        && this.birthForm.status === 'VALID'
+        && this.residenceForm.status === 'VALID') {
+          return true;
+        }
+    return false;
+  }
+
   public checkInputValue() {
     if (this.birthForm.controls.country.value === 'United States') {
       this.displayBirthState = true;
@@ -171,7 +176,6 @@ export class RegisterPage implements OnInit {
   }
 
   public register() {
-
     this.user = {
       fName : this.basicInfoForm.controls.fName.value,
       lName : this.basicInfoForm.controls.lName.value,
@@ -180,23 +184,22 @@ export class RegisterPage implements OnInit {
       userName : this.userInfoForm.controls.username.value,
       password : this.userInfoForm.controls.password.value,
       birthPlace : this.birthForm.controls.state.value === '' ?
-                  this.birthForm.controls.state.value : this.birthForm.controls.country.value,
+                  this.birthForm.controls.country.value : this.birthForm.controls.state.value,
       residesIn : this.residenceForm.controls.state.value === '' ?
-      this.residenceForm.controls.state.value : this.residenceForm.controls.country.value,
+      this.residenceForm.controls.country.value : this.residenceForm.controls.state.value,
       education : this.titleForm.controls.education.value,
       occupationTitle : this.titleForm.controls.occupationTitle.value,
 
     } as RegistrationUserApi;
 
-    console.log(this.user);
-    // this.userService.userRegisterUser(this.user).subscribe((res) => {
-    //   if (res !== null) {
-    //     this.openLoginWSuccess();
-    //   } else {
-    //     this.displayError = true;
-    //     this.error = 'Username is not available';
-    //   }
-    // });
+    this.userService.userRegisterUser(this.user).subscribe((res) => {
+      if (res !== null) {
+        this.openLoginWSuccess();
+      } else {
+        this.displayError = true;
+        this.error = 'Username or email is already taken';
+      }
+    });
   }
 
   public openLoginWSuccess() {

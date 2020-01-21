@@ -19,8 +19,7 @@ import { LocationSelector } from './objects/location.selector';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    SelectedLocationPage
+    AppComponent
   ],
   entryComponents: [SelectedLocationPage],
   imports: [

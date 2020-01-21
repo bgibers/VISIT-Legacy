@@ -32,6 +32,11 @@ export class HomePage {
   private jwtToken: JwtToken = {} as JwtToken;
   public user: LoggedInUser =  {} as LoggedInUser;
   public profilePic: any;
+  public hometownPic: any;
+  public nextVisitPic: any;
+  public currentCityPic: any;
+  public currentCity: string;
+  public hometown: string;
   private userLocations: BehaviorSubject<UserLocation[]> = new BehaviorSubject([]);
   private loading: any;
 
@@ -64,7 +69,10 @@ export class HomePage {
     )
     .subscribe(res => {
       this.user = res;
-
+      this.hometown = this.user.birthPlace.name;
+      this.currentCity = this.user.residesIn.name;
+      this.hometownPic = 'data:image/jpeg;base64,' + this.user.birthPlace.image;
+      this.currentCityPic = 'data:image/jpeg;base64,' + this.user.residesIn.image;
       if (res.avi === null) {
         this.profilePic = '../assets/defaultuser.png';
       } else {

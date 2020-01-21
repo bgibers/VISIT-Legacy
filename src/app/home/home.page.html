@@ -46,8 +46,8 @@
         <ion-row>
           <p class="user-stats">
           {{user.fName}} {{user.lName}} <br>
-          Born in {{user.birthPlace}} <br>
-          Lives in {{user.residesIn}} <br>
+          Born in {{hometown}} <br>
+          Lives in {{currentCity}} <br>
           {{user.education}} | {{user.occupationTitle}} <br>
          </p>
         </ion-row>
@@ -78,10 +78,19 @@
         <ion-text> About {{user.fName}} </ion-text>
       </ion-col>
     </ion-row>
-  <ion-row >
-        <ion-col class="center-any-object" align-self-end>Hometown</ion-col>
-        <ion-col class="center-any-object" align-self-end>Dream visit</ion-col>
-        <ion-col class="center-any-object" align-self-end>Next visit</ion-col>
+  <ion-row center-any-object>
+        <ion-col>
+          <img [src]="hometownPic">
+          <ion-text>Hometown</ion-text> 
+        </ion-col>
+        <ion-col>
+          <img [src]="hometownPic">
+          <ion-text>Dream Visit</ion-text> 
+        </ion-col>
+        <ion-col>
+          <img [src]="hometownPic">
+          <ion-text>Next Visit</ion-text> 
+        </ion-col>
   </ion-row>
 </ion-grid>
 </ion-content> 
