@@ -7,7 +7,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 
 import { RegisterPage } from './register.page';
-import { MaterialModule } from '../material.module';
+import { MaterialModule } from '../../modules/material.module';
 
 const routes: Routes = [
   {

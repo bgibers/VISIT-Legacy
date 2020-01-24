@@ -10,7 +10,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { HttpConfigInterceptor } from './backend/client/httpConfigInterceptor';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { NativeHttpModule } from '../app/ionic-native-http-connection-backend';
+import { NativeHttpModule } from './backend/ionic-native-http-connection-backend';
 import { SelectedLocationPage } from './modals/selected-location/selected-location.page';
 import { ApiModule, UserService } from './backend/client';
 import { AuthGuard } from './backend/services/AuthGuard.service';
@@ -19,7 +19,8 @@ import { LocationSelector } from './objects/location.selector';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SelectedLocationPage
   ],
   entryComponents: [SelectedLocationPage],
   imports: [

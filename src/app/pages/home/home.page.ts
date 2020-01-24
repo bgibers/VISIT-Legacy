@@ -6,11 +6,11 @@ import worldLow from '@amcharts/amcharts4-geodata/worldLow';
 import am4geodata_usaLow from '@amcharts/amcharts4-geodata/usaLow';
 import am4geodata_canadaLow from '@amcharts/amcharts4-geodata/canadaLow';
 import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
-import { JwtToken, UserService, LocationService, UserLocation } from '../backend/client';
+import { JwtToken, UserService, LocationService, UserLocation } from '../../backend/client';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { Events } from '@ionic/angular';
-import { LoggedInUser } from '../backend/client/model/loggedInUser';
+import { LoggedInUser } from '../../backend/client/model/loggedInUser';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 @Component({

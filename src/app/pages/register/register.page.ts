@@ -4,8 +4,8 @@ import { FormControl, FormGroupDirective, FormGroup, NgForm, FormBuilder, Valida
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatStepper } from '@angular/material/stepper';
 
-import { Country, State, LocationSelector } from '../objects/location.selector';
-import { UserService, RegistrationUserApi, CredentialsViewModel } from '../backend/client';
+import { Country, State, LocationSelector } from '../../objects/location.selector';
+import { UserService, RegistrationUserApi, CredentialsViewModel } from '../../backend/client';
 import { AppCustomDirective } from './validators';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
