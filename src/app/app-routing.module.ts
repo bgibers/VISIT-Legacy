@@ -13,8 +13,9 @@ const routes: Routes = [
     loadChildren: () => import('./pages/home/home.module').then(m => m.HomePageModule),
     canActivate: [AuthGuard]
   },
-  { path: 'login', loadChildren: './login/login.module#LoginPageModule' },
-  { path: 'register', loadChildren: './register/register.module#RegisterPageModule' }
+  { path: 'login', loadChildren: './pages/login/login.module#LoginPageModule' },
+  { path: 'register', loadChildren: './pages/register/register.module#RegisterPageModule' },
+  { path: 'post-register', loadChildren: './pages/post-register/post-register.module#PostRegisterPageModule' }
 ];
 
 @NgModule({
