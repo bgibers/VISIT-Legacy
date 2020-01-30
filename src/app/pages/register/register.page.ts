@@ -23,6 +23,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 export class RegisterPage implements OnInit {
   public user: RegistrationUserApi =  {} as RegistrationUserApi ;
   public error: string;
+  public credentials: CredentialsViewModel = {} as CredentialsViewModel ;
 
   public displayBirthState = false;
   public displayResidenceState = false;
@@ -192,9 +193,18 @@ export class RegisterPage implements OnInit {
 
     } as RegistrationUserApi;
 
+    this.credentials = {
+      userName : this.user.userName,
+      password : this.user.password
+    };
+
     this.userService.userRegisterUser(this.user).subscribe((res) => {
       if (res !== null) {
-        this.openLoginWSuccess();
+        this.userService.userLoginUser(this.credentials, true).subscribe((login) => {
+          if (login !== null) {
+            this.openPostRegister();
+          }
+        });
       } else {
         this.displayError = true;
         this.error = 'Username or email is already taken';
@@ -202,13 +212,13 @@ export class RegisterPage implements OnInit {
     });
   }
 
-  public openLoginWSuccess() {
+  public openPostRegister() {
     const navigationExtras: NavigationExtras = {
       state: {
         newUser: this.user.userName
       }
     };
-    this.router.navigate(['/login'], navigationExtras);
+    this.router.navigate(['/post-register']);
   }
 }
 

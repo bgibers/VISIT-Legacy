@@ -18,6 +18,11 @@ export class AppComponent {
 
   public appPages = [
     {
+      title: 'post-register',
+      url: '/post-register',
+      icon: ''
+    },
+    {
       title: 'Home',
       url: '/home',
       icon: 'home'

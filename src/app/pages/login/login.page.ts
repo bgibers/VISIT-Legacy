@@ -23,9 +23,9 @@ export class LoginPage {
    }
 
   public login() {
-    this.userService.userLoginUser(this.credentials).subscribe((res) => {
+    this.userService.userLoginUser(this.credentials, true).subscribe((res) => {
       if (res !== null) {
-        this.router.navigateByUrl('home');
+        this.router.navigateByUrl('post-register');
       } else {
         this.error = 'Invalid username/password';
         this.displayError = true;
@@ -34,9 +34,7 @@ export class LoginPage {
   }
 
   public openRegister() {
-      this.router.navigateByUrl('register');
+     this.router.navigateByUrl('register');
   }
-
-  
 
 }

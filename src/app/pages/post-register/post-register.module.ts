@@ -2,10 +2,12 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { IonicModule } from '@ionic/angular';
 
 import { PostRegisterPage } from './post-register.page';
+import { MaterialModule } from '../../modules/material.module';
 
 const routes: Routes = [
   {
@@ -19,8 +21,10 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
+    MaterialModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [PostRegisterPage]
+  declarations: [PostRegisterPage],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class PostRegisterPageModule {}

@@ -19,6 +19,14 @@ hr {
   border-bottom: 1px solid #ffffff;
 }
 
+.rotate-img-90 {
+  -webkit-transform:rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
 .user-stats {
   font-size: 10px
 }
@@ -27,14 +35,19 @@ hr {
 }
 
 .image {
-     height: 5vw; 
-     width: 5vw; 
+    height: 5vw; 
+    width: 5vw; 
     border: 2px solid #fff;
     border-radius: 50%;
     box-shadow: 0 0 5px gray;
     display: inline-block;
     margin-left: auto;
     margin-right: auto;
+}
+
+.chartdiv {
+  width: 100%;
+  height: 300px
 }
 
 .circle-pic{

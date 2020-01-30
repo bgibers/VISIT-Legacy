@@ -3,7 +3,45 @@
     <ion-title>post-register</ion-title>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
-
+  <mat-horizontal-stepper [linear]="false" #stepper>
+    <mat-step>
+      <ng-template matStepLabel></ng-template> 
+      <label><strong>Select a profile image to upload</strong></label>
+      <div class="center">
+      <img class="circle-pic center" [src]="profilePic" alt="../assets/defaultuser.png">
+      <div>  
+        <ion-button (click)="selectImage()">
+          Select image
+        </ion-button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+      </div>
+  </mat-step>
+    <mat-step>
+        <ng-template matStepLabel></ng-template>
+        <label><strong>Which locations have you previously visited?</strong></label>
+        <label>Click a location on the map to select/deselect locations.</label>
+        <div class="chartdiv" id="visitedMap"></div>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+    </mat-step>
+    <mat-step>
+        <ng-template matStepLabel></ng-template>
+        <label><strong>Which locations would you like to visit?</strong></label>
+        <label>Click a location on the map to select/deselect locations.</label>
+        <div class="chartdiv" id="toVisitMap"></div>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+    </mat-step>
+  </mat-horizontal-stepper>
 </ion-content>
+<ion-footer>
+  <div padding>
+    <ion-button [disabled]="!canRegister" size="large" type="submit" (click)="submit()" expand="block">Submit</ion-button>
+  </div>
+</ion-footer>

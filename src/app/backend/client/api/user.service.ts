@@ -120,7 +120,7 @@ export class UserService {
     // public userLoginUser(credentials: CredentialsViewModel, observe: any = 'body', reportProgress: boolean = false ): Observable<any>;
     // public userLoginUser(credentials: CredentialsViewModel, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<JwtToken>>;
     // public userLoginUser(credentials: CredentialsViewModel, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<JwtToken>>;
-    public userLoginUser(credentials: CredentialsViewModel, observe?: 'body', reportProgress?: boolean): Observable<JwtToken> {
+    public userLoginUser(credentials: CredentialsViewModel, postRegister: boolean , observe?: 'body', reportProgress?: boolean): Observable<JwtToken> {
     // public userLoginUser(credentials: CredentialsViewModel, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
 
         if (credentials === null || credentials === undefined) {
@@ -170,10 +170,16 @@ export class UserService {
                         curr.jwtToken = res.authToken;
                         await this.storage.set('USER', res);
                     });
-                    this.authSubject.next(true);
+                    if (!postRegister) {
+                        this.authSubject.next(true);
+                    }
                 }
             })
         );
+    }
+
+    public setAuthSubject() {
+        this.authSubject.next(true);
     }
 
     public async logout() {

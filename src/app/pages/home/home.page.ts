@@ -42,7 +42,7 @@ export class HomePage {
   }
 
   async ionViewWillEnter() {
-    await this.presentLoading();
+    //await this.presentLoading();
     await this.map.createMap('homeMap');
     this.userService.userGetCurrentUser()
     .pipe(
@@ -51,9 +51,8 @@ export class HomePage {
           async (token) => {
             this.jwtToken = token;
             this.getUserLocations();
+        //    await this.loading.dismiss();
           });
-          // Hide the loading spinner on success or error
-        await this.loading.dismiss();
       })
     )
     .subscribe(res => {
