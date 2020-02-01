@@ -327,11 +327,12 @@ export class SelectedLocationPage {
     if (!initialLoad) {
       const newLocation: UserLocation = {
         userId: this.jwtToken.id,
-        locationId: locationId,
+        locationId,
         visited: status === 'visited' ? 1 : 0,
         toVisit: status === 'toVisit' ? 1 : 0,
         specialCase: ''
       } as UserLocation;
+
       this.newLocations.push(newLocation);
     }
 

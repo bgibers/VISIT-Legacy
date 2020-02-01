@@ -8,7 +8,7 @@ import { File } from '@ionic-native/file/ngx';
 import { LoggedInUser } from 'src/app/backend/client/model/loggedInUser';
 import { Map } from '../../objects/map';
 import { UserService, JwtToken } from 'src/app/backend/client';
-
+import { MapSelectionMode } from '../../objects/enums/map-selection-mode';
 @Component({
   selector: 'post-register',
   templateUrl: './post-register.page.html',
@@ -45,8 +45,8 @@ export class PostRegisterPage {
 
   async ionViewWillEnter() {
     await this.presentLoading();
-    await this.visitedMap.createMap('visitedMap');
-    await this.toVisitMap.createMap('toVisitMap');
+    await this.visitedMap.createMap('visitedMap', MapSelectionMode.VISITED);
+    await this.toVisitMap.createMap('toVisitMap', MapSelectionMode.TO_VISIT);
     this.userService
       .userGetCurrentUser()
       .pipe(

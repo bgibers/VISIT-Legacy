@@ -7,29 +7,53 @@ import worldLow from '@amcharts/amcharts4-geodata/worldLow';
 import am4geodata_usaLow from '@amcharts/amcharts4-geodata/usaLow';
 import am4geodata_canadaLow from '@amcharts/amcharts4-geodata/canadaLow';
 import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
+import { MapSelectionMode } from './enums/map-selection-mode';
 
 export class Map {
   private chart: am4maps.MapChart;
-  private polygonTemplate: any;
-  private worldSeries: am4maps.MapPolygonSeries;
-  private usaSeries: am4maps.MapPolygonSeries;
-  private canadaSeries: am4maps.MapPolygonSeries;
-  private russiaSeries: am4maps.MapPolygonSeries;
-  private selectedArea: any;
+  private polygonArr: Array<am4maps.MapPolygon>;
+  private selectedArr: Array<{
+      locationId: string,
+      status: string
+  }>;
+  private seriesArr: Array<am4maps.MapPolygonSeries>;
+  private selectedArea: am4maps.MapPolygon;
   private selectionMode: MapSelectionMode;
+  private lastSelected: am4maps.MapPolygon;
+  private name: string;
+  private id: any;
 
   constructor(private zone: NgZone) {
     this.selectedArea = new am4maps.MapPolygon();
+    this.polygonArr = new Array<am4maps.MapPolygon>();
+    this.selectedArr = new Array();
+    this.seriesArr = new Array<am4maps.MapPolygonSeries>();
   }
 
-  async createMap(divName: string) {
+  get selectedId() {
+    return this.id;
+  }
+
+  set selectedId(id) {
+      this.id = id;
+  }
+
+  get selectedName() {
+    return this.name;
+  }
+
+  set selectedName(name) {
+      this.name = name;
+  }
+
+  async createMap(divName: string, selectionMode: MapSelectionMode) {
     this.zone.runOutsideAngular(() => {
-      let polygonTemplate;
-      let worldSeries;
-      let usaSeries;
-      let canadaSeries;
-      let russiaSeries;
+      let worldSeries: am4maps.MapPolygonSeries;
+      let usaSeries: am4maps.MapPolygonSeries;
+      let canadaSeries: am4maps.MapPolygonSeries;
+      let russiaSeries: am4maps.MapPolygonSeries;
       let chart: am4maps.MapChart;
+
       am4core.ready(() => {
         am4core.useTheme(am4themes_animated);
 
@@ -41,6 +65,8 @@ export class Map {
         chart.zoomControl.plusButton.hide();
         chart.zoomControl.minusButton.hide();
         chart.tapToActivate = true;
+        chart.seriesContainer.events.disableType('doublehit');
+        chart.chartContainer.background.events.disableType('doublehit');
 
         // Home button
         const homeButton = new am4core.Button();
@@ -61,15 +87,41 @@ export class Map {
         worldSeries = chart.series.push(new am4maps.MapPolygonSeries());
         worldSeries.exclude = ['AQ'];
         worldSeries.useGeodata = true;
+        this.seriesArr.push(worldSeries);
+        this.polygonArr.push(worldSeries.mapPolygons.template);
 
-        polygonTemplate = worldSeries.mapPolygons.template;
+        // Series for United States map
+        usaSeries = chart.series.push(new am4maps.MapPolygonSeries());
+        usaSeries.geodata = am4geodata_usaLow;
+        this.seriesArr.push(usaSeries);
+        this.polygonArr.push(usaSeries.mapPolygons.template);
+
+        // Series for Canada map
+        canadaSeries = chart.series.push(new am4maps.MapPolygonSeries());
+        canadaSeries.geodata = am4geodata_canadaLow;
+        this.seriesArr.push(canadaSeries);
+        this.polygonArr.push(canadaSeries.mapPolygons.template);
+
+        // Series for Russia map
+        russiaSeries = chart.series.push(new am4maps.MapPolygonSeries());
+        russiaSeries.geodata = am4geodata_russiaLow;
+        this.seriesArr.push(russiaSeries);
+        this.polygonArr.push(russiaSeries.mapPolygons.template);
+      });
+
+      this.setupTemplates();
+      this.setSelectionMode(selectionMode);
+      this.chart = chart;
+    });
+  }
+
+  setupTemplates() {
+    this.polygonArr.forEach(polygonTemplate => {
         polygonTemplate.tooltipText = '{name}';
         polygonTemplate.nonScalingStroke = true;
         polygonTemplate.applyOnClones = true;
         polygonTemplate.strokeOpacity = 0.5;
 
-        // Create states for world map
-        let lastSelected;
         const activeState = polygonTemplate.states.create('active');
 
         const visited = polygonTemplate.states.create('visited');
@@ -78,127 +130,64 @@ export class Map {
         const toVisit = polygonTemplate.states.create('toVisit');
         toVisit.properties.fill = am4core.color('#0000FF');
 
-        // Series for United States map
-        usaSeries = chart.series.push(new am4maps.MapPolygonSeries());
-        usaSeries.geodata = am4geodata_usaLow;
-
-        const usPolygonTemplate = usaSeries.mapPolygons.template;
-        usPolygonTemplate.tooltipText = '{name}';
-        usPolygonTemplate.nonScalingStroke = true;
-
-        const usVisited = usPolygonTemplate.states.create('visited');
-        usVisited.properties.fill = am4core.color('#E94F37');
-
-        const usToVisit = usPolygonTemplate.states.create('toVisit');
-        usToVisit.properties.fill = am4core.color('#0000FF');
-
-        // Series for Canada map
-        canadaSeries = chart.series.push(new am4maps.MapPolygonSeries());
-        canadaSeries.geodata = am4geodata_canadaLow;
-
-        const canadaPolygonTemplate = canadaSeries.mapPolygons.template;
-        canadaPolygonTemplate.tooltipText = '{name}';
-        canadaPolygonTemplate.nonScalingStroke = true;
-
-        const canadaVisited = canadaPolygonTemplate.states.create('visited');
-        canadaVisited.properties.fill = am4core.color('#E94F37');
-
-        const canadaToVisit = canadaPolygonTemplate.states.create('toVisit');
-        canadaToVisit.properties.fill = am4core.color('#0000FF');
-
-        // Series for Russia map
-        russiaSeries = chart.series.push(new am4maps.MapPolygonSeries());
-        russiaSeries.geodata = am4geodata_russiaLow;
-
-        const russiaPolygonTemplate = russiaSeries.mapPolygons.template;
-        russiaPolygonTemplate.tooltipText = '{name}';
-        russiaPolygonTemplate.nonScalingStroke = true;
-
-        const russiaVisited = russiaPolygonTemplate.states.create('visited');
-        russiaVisited.properties.fill = am4core.color('#E94F37');
-
-        const russiaToVisit = russiaPolygonTemplate.states.create('toVisit');
-        russiaToVisit.properties.fill = am4core.color('#0000FF');
+        const defaultState = polygonTemplate.states.create('default');
+        defaultState.properties.fill = am4core.color('#d9d9d9');
 
         polygonTemplate.events.on('hit', ev => {
-          const data = ev.target.dataItem.dataContext;
-          this.selectedArea = data;
-          // https://codepen.io/team/amcharts/pen/qgLprb
-          // create seperate json file to read id's from
+            const data = ev.target.dataItem.dataContext as am4maps.MapPolygon;
 
-          ev.target.series.chart.zoomToMapObject(ev.target);
-          if (lastSelected !== ev.target) {
-            lastSelected = ev.target;
-          }
-        });
-        polygonTemplate.events.off('doubleHit');
+            this.selectedArea = data;
+           // this.selectedName = data.name;
 
-        usPolygonTemplate.events.on('hit', ev => {
-          const data = ev.target.dataItem.dataContext;
-          this.selectedArea = data;
+            this.selectedId = data.id;
 
-          ev.target.series.chart.zoomToMapObject(ev.target);
-          if (lastSelected !== ev.target) {
-            lastSelected = ev.target;
-          }
-        });
-        usPolygonTemplate.events.off('doubleHit');
-
-        canadaPolygonTemplate.events.on('hit', ev => {
-          const data = ev.target.dataItem.dataContext;
-          this.selectedArea = data;
-
-          ev.target.series.chart.zoomToMapObject(ev.target);
-          if (lastSelected !== ev.target) {
-            lastSelected = ev.target;
-          }
-        });
-        canadaPolygonTemplate.events.off('doubleHit');
-
-        russiaPolygonTemplate.events.on('hit', ev => {
-          const data = ev.target.dataItem.dataContext;
-          this.selectedArea = data;
-
-          ev.target.series.chart.zoomToMapObject(ev.target);
-          if (lastSelected !== ev.target) {
-            lastSelected = ev.target;
-          }
-        });
-        russiaPolygonTemplate.events.off('doubleHit');
-      });
-      this.chart = chart;
-      this.polygonTemplate = polygonTemplate;
-      this.worldSeries = worldSeries;
-      this.usaSeries = usaSeries;
-      this.canadaSeries = canadaSeries;
-      this.russiaSeries = russiaSeries;
+            if (this.lastSelected !== ev.target) {
+              ev.target.series.chart.zoomToMapObject(ev.target);
+              this.lastSelected = ev.target;
+            }
+          });
     });
   }
 
-  async changeVisitStatus(locationId, status) {
-    const worldSeries = this.worldSeries;
-    const usaSeries = this.usaSeries;
-    const canadaSeries = this.canadaSeries;
-    const russiaSeries = this.russiaSeries;
-    let selectedArea = new am4maps.MapPolygon();
+  setSelectionMode(selectionMode: MapSelectionMode) {
+      if (selectionMode !== MapSelectionMode.NONE) {
+        this.polygonArr.forEach(polygonTemplate => {
+            polygonTemplate.events.on('doublehit', ev => {
+                const data = ev.target.dataItem.dataContext as am4maps.MapPolygon;
+                selectionMode === MapSelectionMode.TO_VISIT ?
+                this.changeVisitStatus(data.id, 'toVisit') :
+                this.changeVisitStatus(data.id, 'visited');
+            });
+        });
+      }
+  }
 
-    if (locationId.toString().includes('US-')) {
-      selectedArea = usaSeries.getPolygonById(locationId);
-    } else if (locationId.toString().includes('CA-')) {
-      selectedArea = canadaSeries.getPolygonById(locationId);
-    } else if (locationId.toString().includes('RU-')) {
-      selectedArea = russiaSeries.getPolygonById(locationId);
+  async changeVisitStatus(locationId: string , status: string) {
+    for (const series of this.seriesArr) {
+        const result = series.getPolygonById(locationId);
+
+        if (result !== undefined) {
+            this.selectedArea = result;
+            break;
+        }
+    }
+
+    const locationInArray = this.selectedArr.find(d => d.locationId === locationId);
+    if (locationInArray !== undefined) {
+        const index = this.selectedArr.indexOf(locationInArray, 0);
+        if (index > -1) {
+            this.selectedArr.splice(index, 1);
+            this.selectedArea.setState('default');
+        }
     } else {
-      selectedArea = worldSeries.getPolygonById(locationId);
+        if (status === 'visited') {
+            this.selectedArea.setState('visited');
+          } else if (status === 'toVisit') {
+            this.selectedArea.setState('toVisit');
+          }
+        this.selectedArr.push({locationId, status});
     }
-
-    if (status === 'visited') {
-      selectedArea.setState('visited');
-    } else if (status === 'toVisit') {
-      selectedArea.setState('toVisit');
-    }
-
-    this.selectedArea = selectedArea;
+    console.log(this.selectedArr);
   }
 
   destroyMap() {

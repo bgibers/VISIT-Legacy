@@ -1,7 +1,7 @@
-enum MapSelectionMode {
+export enum MapSelectionMode {
     MULTI_VISIT,
     MULTI_TO_VISIT,
-    VISIT,
+    VISITED,
     TO_VISIT,
     NONE
 }

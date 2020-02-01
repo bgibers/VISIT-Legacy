@@ -8,6 +8,7 @@ import { LoadingController } from '@ionic/angular';
 import { JwtToken, UserService, LocationService, UserLocation } from '../../backend/client';
 import { LoggedInUser } from '../../backend/client/model/loggedInUser';
 import { Map } from '../../objects/map';
+import { MapSelectionMode } from '../../objects/enums/map-selection-mode';
 
 @Component({
   selector: 'app-home',
@@ -43,7 +44,7 @@ export class HomePage {
 
   async ionViewWillEnter() {
     //await this.presentLoading();
-    await this.map.createMap('homeMap');
+    await this.map.createMap('homeMap', MapSelectionMode.NONE);
     this.userService.userGetCurrentUser()
     .pipe(
       finalize(async () => {
