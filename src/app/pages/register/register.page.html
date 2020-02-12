@@ -1,6 +1,6 @@
 <ion-content color="light">
-  <mat-vertical-stepper  [linear]="true" #stepper>
-\    <mat-step [stepControl]="basicInfoForm">
+  <mat-vertical-stepper  [linear]="false" #stepper>
+    <mat-step [stepControl]="basicInfoForm">
       <form [formGroup]="basicInfoForm">
         <ng-template matStepLabel>Basic Information</ng-template>
         <mat-form-field>
@@ -97,38 +97,24 @@
     <mat-step [stepControl]="birthForm" label="Birthplace">
       <form [formGroup]="birthForm">
         <mat-form-field>
-          <input
-            type="text"
-            placeholder="Birthplace"
-            matInput
-            formControlName="country"
-            [matAutocomplete]="autoBirth"
-          />
-          <mat-autocomplete #autoBirth="matAutocomplete" (optionSelected)="checkInputValue()">
-            <mat-option
-              *ngFor="let option of birthCountryObservable | async"
-              [value]="option.name"
-            >
-              {{option.name}}
+          <mat-select #birthCountrySelect>
+            <mat-option>
+              <ngx-mat-select-search formControlName="country"></ngx-mat-select-search>
             </mat-option>
-          </mat-autocomplete>
+            <mat-option *ngFor="let country of birthCountryObservable | async" [value]="country.name" (optionSelected)="checkInputValue()">
+              {{country.name}}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field *ngIf="displayBirthState">
-          <input
-            type="text"
-            placeholder="State"
-            matInput
-            formControlName="state"
-            [matAutocomplete]="autoBirth"
-          />
-          <mat-autocomplete #autoBirth="matAutocomplete">
-            <mat-option
-              *ngFor="let option of birthStateObservable | async"
-              [value]="option.name"
-            >
-              {{option.name}}
+          <mat-select #birthStateSelect>
+            <mat-option>
+              <ngx-mat-select-search formControlName="state"></ngx-mat-select-search>
             </mat-option>
-          </mat-autocomplete>
+            <mat-option *ngFor="let state of birthStateObservable | async" [value]="state.name">
+              {{state.name}}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
         <div>
           <button mat-button (click)="birthForm.reset()">Clear</button>
@@ -142,38 +128,24 @@
     <mat-step [stepControl]="residenceForm" label="Current residency">
       <form [formGroup]="residenceForm">
         <mat-form-field>
-          <input
-            type="text"
-            placeholder="Current residency"
-            matInput
-            formControlName="country"
-            [matAutocomplete]="autoResidence"
-          />
-          <mat-autocomplete #autoResidence="matAutocomplete" (optionSelected)="checkInputValue()">
-            <mat-option
-              *ngFor="let option of residenceCountryObservable | async"
-              [value]="option.name"
-            >
-              {{option.name}}
+          <mat-select #resCountrySelect>
+            <mat-option>
+              <ngx-mat-select-search formControlName="country"></ngx-mat-select-search>
             </mat-option>
-          </mat-autocomplete>
+            <mat-option *ngFor="let country of residenceCountryObservable | async" [value]="country.name">
+              {{country.name}}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field *ngIf="displayResidenceState">
-          <input
-            type="text"
-            placeholder="State"
-            matInput
-            formControlName="state"
-            [matAutocomplete]="autoBirth"
-          />
-          <mat-autocomplete #autoBirth="matAutocomplete">
-            <mat-option
-              *ngFor="let option of residenceStateObservable | async"
-              [value]="option.name"
-            >
-              {{option.name}}
+          <mat-select #resStateSelect>
+            <mat-option>
+              <ngx-mat-select-search formControlName="state"></ngx-mat-select-search>
             </mat-option>
-          </mat-autocomplete>
+            <mat-option *ngFor="let state of residenceStateObservable | async" [value]="state.name">
+              {{state.name}}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
         <div>
           <button mat-button (click)="residenceForm.reset()">Clear</button>
@@ -220,62 +192,3 @@
     <ion-button size="large" type="submit" (click)="openLogin()" expand="block" >Back to login</ion-button>
   </div>
 </ion-content>
-
-<!---
-  <form  #form="ngForm" (ngSubmit)="register()">
-    <ion-grid>
-      <ion-row color="light" justify-content-center>
-        <ion-col align-self-center size-md="6" size-lg="5" size-xs="12">
-          <div text-center>
-            <h3>Create your account!</h3>
-          </div>
-          <div padding>
-            <ion-item>
-              <ion-input  name="fName" type="text" placeholder="First name" [(ngModel)]="user.fName" required></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input  name="lName" type="text" placeholder="Last name" [(ngModel)]="user.lName" required></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input  name="userName" type="text" placeholder="Username" [(ngModel)]="user.userName" required></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input name="email" type="email" placeholder="your@email.com" [(ngModel)]="user.email" required></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label>Birthday</ion-label>
-                <ion-datetime name="birthday" displayFormat="MMM DD YYYY" placeholder="Birthday" [(ngModel)]="user.birthday" required></ion-datetime>
-            </ion-item>
-            <ion-item>
-              <ion-input name="birthplace" type="text" placeholder="Birthplace" [(ngModel)]="user.birthPlace" required></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input name="currentCity" type="text" placeholder="Current City" [(ngModel)]="user.residesIn" required></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input name="education" type="text" placeholder="Education" [(ngModel)]="user.education" ></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input name="occupation" type="text" placeholder="Occupation" [(ngModel)]="user.occupationTitle" ></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input name="password" type="password" placeholder="Password" [(ngModel)]="user.password" required></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input name="confirm" type="password" placeholder="Password again" [(ngModel)]="passwordVal" required></ion-input>
-            </ion-item>
-          </div>
-          <div padding>
-            <ion-button  size="large" type="submit" [disabled]="form.invalid" expand="block">Register</ion-button>
-          </div>
-          <div padding>
-            <ion-button size="large" type="submit" (click)="openLogin()" expand="block">Back to login</ion-button>
-          </div>
-        </ion-col>
-      </ion-row>
-      <ion-row color="primary" justify-content-center *ngIf="displayError">
-        <ion-text color="danger">{{error}}</ion-text>
-    </ion-row>
-    </ion-grid>
-  </form>
--->

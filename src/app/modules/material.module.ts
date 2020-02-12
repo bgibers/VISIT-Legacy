@@ -15,7 +15,7 @@ import {
   MatAutocompleteModule
 } from '@angular/material';
 
-import { SelectAutocompleteComponent } from 'select-autocomplete';
+// import { SelectAutocompleteModule } from 'select-autocomplete';
 
 @NgModule({
   exports: [
@@ -31,8 +31,7 @@ import { SelectAutocompleteComponent } from 'select-autocomplete';
     MatOptionModule,
     MatSelectModule,
     MatPaginatorModule,
-    MatSortModule,
-    SelectAutocompleteComponent
+    MatSortModule
   ]
 })
 export class MaterialModule {}

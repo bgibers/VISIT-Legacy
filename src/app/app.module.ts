@@ -18,6 +18,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LocationSelector } from './objects/location.selector';
 import { File } from '@ionic-native/file/ngx';
 import { Camera } from '@ionic-native/Camera/ngx';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 @NgModule({
   declarations: [
     AppComponent,
@@ -31,6 +32,7 @@ import { Camera } from '@ionic-native/Camera/ngx';
       ApiModule,
       NativeHttpModule,
       BrowserAnimationsModule,
+      NgxMatSelectSearchModule
     ],
   providers: [
     StatusBar,

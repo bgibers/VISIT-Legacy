@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { FormControl, FormGroupDirective, FormGroup, NgForm, FormBuilder, Validators } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -7,8 +7,10 @@ import { MatStepper } from '@angular/material/stepper';
 import { Country, State, LocationSelector } from '../../objects/location.selector';
 import { UserService, RegistrationUserApi, CredentialsViewModel } from '../../backend/client';
 import { AppCustomDirective } from './validators';
-import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { startWith, map, takeUntil, take } from 'rxjs/operators';
+import { MatSelect } from '@angular/material';
+
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
@@ -45,14 +47,13 @@ export class RegisterPage implements OnInit {
   public startDate = this.maxDate;
   public matcher: MyErrorStateMatcher;
   public birthStateObservable: Observable<State[]>;
-  public birthCountryObservable: Observable<State[]>;
+  public birthCountryObservable: Observable<Country[]>;
   public residenceStateObservable: Observable<State[]>;
-  public residenceCountryObservable: Observable<State[]>;
+  public residenceCountryObservable: Observable<Country[]>;
 
 
   constructor(private userService: UserService, private router: Router,
               private fb: FormBuilder, private selector: LocationSelector) {
-
     // setting the min date and thus the max birth date allowing < 100 year old choosable birthdate
     this.minDate.setDate( this.minDate.getDate() );
     this.minDate.setFullYear( this.minDate.getFullYear() - 100 );
@@ -119,9 +120,10 @@ export class RegisterPage implements OnInit {
       startWith(''),
       map(value => this._filterState(value))
     );
+
   }
 
-  public _filterCountry(value: string): Array<State> {
+  public _filterCountry(value: string) {
     const filterValue = value.toLowerCase();
     return this.countryOptions.filter(option => option.name.toLowerCase().includes(filterValue));
   }
@@ -143,6 +145,7 @@ export class RegisterPage implements OnInit {
   }
 
   public checkInputValue() {
+    console.log("I'm here")
     if (this.birthForm.controls.country.value === 'United States') {
       this.displayBirthState = true;
     } else {
