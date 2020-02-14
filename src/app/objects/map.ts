@@ -12,7 +12,7 @@ import { MapSelectionMode } from './enums/map-selection-mode';
 export class Map {
   private chart: am4maps.MapChart;
   private polygonArr: Array<am4maps.MapPolygon>;
-  private selectedArr: Array<{
+  public selectedArr: Array<{
       locationId: string,
       status: string
   }>;
@@ -160,6 +160,17 @@ export class Map {
             });
         });
       }
+  }
+
+  zoomToLocation(locationId: string) {
+    for (const series of this.seriesArr) {
+      const result = series.getPolygonById(locationId);
+
+      if (result !== undefined) {
+          this.chart.zoomToMapObject(result);
+          break;
+      }
+    }
   }
 
   async changeVisitStatus(locationId: string , status: string) {

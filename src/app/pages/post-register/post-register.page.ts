@@ -1,20 +1,24 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { finalize } from 'rxjs/operators';
+import { finalize, take } from 'rxjs/operators';
 import { LoadingController, ActionSheetController } from '@ionic/angular';
 import { Camera, CameraOptions } from '@ionic-native/Camera/ngx';
 import { File } from '@ionic-native/file/ngx';
 
 import { LoggedInUser } from 'src/app/backend/client/model/loggedInUser';
 import { Map } from '../../objects/map';
-import { UserService, JwtToken } from 'src/app/backend/client';
+import { UserService, UserLocationService, JwtToken, UserLocation } from 'src/app/backend/client';
 import { MapSelectionMode } from '../../objects/enums/map-selection-mode';
+import { LocationSelector } from 'src/app/objects/location.selector';
+import { map, startWith } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
+
 @Component({
   selector: 'post-register',
   templateUrl: './post-register.page.html',
   styleUrls: ['./post-register.page.scss']
 })
-export class PostRegisterPage {
+export class PostRegisterPage implements OnInit {
   private jwtToken: JwtToken = {} as JwtToken;
   public user: LoggedInUser = {} as LoggedInUser;
   public profilePic = '../../../assets/defaultuser.png';
@@ -22,6 +26,11 @@ export class PostRegisterPage {
   private loading: any;
   private visitedMap: Map;
   private toVisitMap: Map;
+  public searchOptions: Array<any>;
+  public canRegister = false;
+  public searchCtrl: FormControl = new FormControl();
+  public searchFilterCtrl: FormControl = new FormControl();
+  public searchValue: string;
 
   constructor(
     private userService: UserService,
@@ -31,7 +40,9 @@ export class PostRegisterPage {
     private file: File,
     private route: ActivatedRoute,
     public actionSheetController: ActionSheetController,
-    public loadingController: LoadingController
+    public loadingController: LoadingController,
+    private selector: LocationSelector,
+    private userLocationService: UserLocationService
   ) {
     this.visitedMap = new Map(zone);
     this.toVisitMap = new Map(zone);
@@ -41,6 +52,27 @@ export class PostRegisterPage {
     //     this.username = this.router.getCurrentNavigation().extras.state.newUser;
     //   }
     // });
+  }
+  ngOnInit(): void {
+    this.searchOptions = this.selector.getAllLocations();
+    this.searchFilterCtrl.valueChanges
+    .pipe(
+      startWith(''),
+      map(value => this._filterSearch(value))
+    )
+  }
+
+  public _filterSearch(value: string) {
+    const filterValue = value.toLowerCase();
+    return this.searchOptions.filter(option => option.name.toLowerCase().includes(filterValue));
+  }
+
+  public zoomToLocation(mapType: string) {
+    if (mapType === 'visited') {
+      this.visitedMap.zoomToLocation(this.searchValue);
+    } else {
+      this.toVisitMap.zoomToLocation(this.searchValue);
+    }
   }
 
   async ionViewWillEnter() {
@@ -52,11 +84,11 @@ export class PostRegisterPage {
       .pipe(
         finalize(async () => {
           await this.userService.getUserToken().then(async token => {
-            console.log(this.user);
             this.jwtToken = token;
             await this.loading.dismiss();
           });
-        })
+        }),
+        take(1)
       )
       .subscribe(res => {
         this.user = res;
@@ -85,7 +117,7 @@ export class PostRegisterPage {
       // If it's base64 (DATA_URL):
       this.imageData = res;
       this.profilePic = 'data:image/jpeg;base64,' + res;
-      console.log(res)
+      console.log(res);
     }, (err) => {
       // Handle error
     });
@@ -115,7 +147,37 @@ export class PostRegisterPage {
     await actionSheet.present();
   }
 
+  setCanRegister() {
+    this.canRegister = !this.canRegister;
+  }
+
   submit() {
-    this.userService.setAuthSubject();
+    const locationsToPost: UserLocation[] = [];
+
+    this.visitedMap.selectedArr.forEach(visited => {
+      locationsToPost.push({
+        userId: this.jwtToken.id,
+        locationId: visited.locationId,
+        visited: 1,
+        toVisit: 0,
+        specialCase: ''
+      } as UserLocation);
+    });
+
+    this.toVisitMap.selectedArr.forEach(toVisit => {
+      locationsToPost.push({
+        userId: this.jwtToken.id,
+        locationId: toVisit.locationId,
+        visited: 0,
+        toVisit: 1,
+        specialCase: ''
+      } as UserLocation);
+    });
+
+    this.userLocationService.userLocationPostUserLocation(locationsToPost)
+                            .pipe(take(1)).subscribe(x => {
+                              this.userService.setAuthSubject();
+                              this.router.navigateByUrl('home', { replaceUrl: true })
+                            });
   }
 }

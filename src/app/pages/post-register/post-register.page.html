@@ -23,17 +23,40 @@
         <label><strong>Which locations have you previously visited?</strong></label>
         <label>Click a location on the map to zoom to it.</label>
         <label>Double click the location to select/deselect it</label>
+        <mat-form-field>
+          <mat-label>Search</mat-label>
+          <mat-select (ngModel)="searchValue" (selectionChange)="zoomToLocation('visited')">
+            <mat-option>
+              <ngx-mat-select-search></ngx-mat-select-search>
+            </mat-option>
+            <mat-option *ngFor="let location of searchOptions" [value]="location.id">
+              {{location.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
         <div class="chartdiv" id="visitedMap"></div>
         <div>
           <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperNext (click)="setCanRegister()">Next</button>
         </div>
     </mat-step>
     <mat-step>
         <ng-template matStepLabel></ng-template>
         <label><strong>Which locations would you like to visit?</strong></label>
         <label>Click a location on the map to zoom to it.</label>
-        <label>Double click the location to select/deselect it</label>        <div class="chartdiv" id="toVisitMap"></div>
+        <label>Double click the location to select/deselect it</label>        
+        <mat-form-field>
+          <mat-label>Search</mat-label>
+          <mat-select ngModel="searchValue" (selectionChange)="zoomToLocation('toVisit')">
+            <mat-option>
+              <ngx-mat-select-search></ngx-mat-select-search>
+            </mat-option>
+            <mat-option *ngFor="let location of searchOptions" [value]="location.id">
+              {{location.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="chartdiv" id="toVisitMap"></div>
         <div>
           <button mat-button matStepperPrevious>Back</button>
           <button mat-button matStepperNext>Next</button>

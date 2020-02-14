@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { FormControl, FormGroupDirective, FormGroup, NgForm, FormBuilder, Validators } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -7,13 +7,11 @@ import { MatStepper } from '@angular/material/stepper';
 import { Country, State, LocationSelector } from '../../objects/location.selector';
 import { UserService, RegistrationUserApi, CredentialsViewModel } from '../../backend/client';
 import { AppCustomDirective } from './validators';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { startWith, map, takeUntil, take } from 'rxjs/operators';
-import { MatSelect } from '@angular/material';
+import { Observable } from 'rxjs';
+import { startWith, map, mergeMap } from 'rxjs/operators';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-    const isSubmitted = form && form.submitted;
     return (control && control.invalid);
   }
 }
@@ -81,12 +79,16 @@ export class RegisterPage implements OnInit {
 
     this.birthForm = this.fb.group({
       country: ['', Validators.required],
-      state: ['']
+      state: [''],
+      countryFilter: [''],
+      stateFilter: ['']
     });
 
     this.residenceForm = this.fb.group({
       country: ['', Validators.required],
-      state: ['']
+      state: [''],
+      countryFilter: [''],
+      stateFilter: ['']
     });
 
     this.titleForm = this.fb.group({
@@ -95,32 +97,33 @@ export class RegisterPage implements OnInit {
     });
 
     this.countryOptions = this.selector.getCountries().Countries;
+    this.countryOptions.sort(this.selector.compare);
     this.stateOptions = this.selector.getStates().States;
+    this.stateOptions.sort(this.selector.compare);
 
-    this.birthCountryObservable = this.birthForm.get('country').valueChanges
+    this.birthCountryObservable = this.birthForm.get('countryFilter').valueChanges
     .pipe(
       startWith(''),
       map(value => this._filterCountry(value))
     );
 
-    this.birthStateObservable = this.birthForm.get('state').valueChanges
+    this.birthStateObservable = this.birthForm.get('stateFilter').valueChanges
     .pipe(
       startWith(''),
       map(value => this._filterState(value))
     );
 
-    this.residenceCountryObservable = this.residenceForm.get('country').valueChanges
+    this.residenceCountryObservable = this.residenceForm.get('countryFilter').valueChanges
     .pipe(
       startWith(''),
       map(value => this._filterCountry(value))
     );
 
-    this.residenceStateObservable = this.residenceForm.get('state').valueChanges
+    this.residenceStateObservable = this.residenceForm.get('stateFilter').valueChanges
     .pipe(
       startWith(''),
       map(value => this._filterState(value))
     );
-
   }
 
   public _filterCountry(value: string) {
@@ -145,8 +148,7 @@ export class RegisterPage implements OnInit {
   }
 
   public checkInputValue() {
-    console.log("I'm here")
-    if (this.birthForm.controls.country.value === 'United States') {
+    if (this.birthForm.controls.country.value.name === 'United States') {
       this.displayBirthState = true;
     } else {
         this.displayBirthState = false;
@@ -180,6 +182,7 @@ export class RegisterPage implements OnInit {
   }
 
   public register() {
+    console.log(this.birthForm.controls.state.value ? 'true' : 'false');
     this.user = {
       fName : this.basicInfoForm.controls.fName.value,
       lName : this.basicInfoForm.controls.lName.value,
@@ -201,26 +204,38 @@ export class RegisterPage implements OnInit {
       password : this.user.password
     };
 
-    this.userService.userRegisterUser(this.user).subscribe((res) => {
-      if (res !== null) {
-        this.userService.userLoginUser(this.credentials, true).subscribe((login) => {
+
+    // todo whenever backend is refactored
+    this.userService.userRegisterUser(this.user)
+    .pipe(
+      map(res => {
+        if (res !== null) {
+          return true;
+        } else {
+          this.displayError = true;
+          this.error = 'Username or email is already taken';
+          throw new Error('Username or email is already taken');
+        }
+      }),
+      mergeMap(res => this.userService.userLoginUser(this.credentials, true)))
+        .subscribe((login) => {
           if (login !== null) {
             this.openPostRegister();
           }
-        });
-      } else {
-        this.displayError = true;
-        this.error = 'Username or email is already taken';
-      }
-    });
+        }
+    );
   }
 
+  // leaving for example
+  // public openPostRegister() {
+  //   const navigationExtras: NavigationExtras = {
+  //     state: {
+  //       newUser: this.user.userName
+  //     }
+  //   };
+  //   this.router.navigate(['/post-register'], navigationExtras);
+  // }
   public openPostRegister() {
-    const navigationExtras: NavigationExtras = {
-      state: {
-        newUser: this.user.userName
-      }
-    };
     this.router.navigate(['/post-register']);
   }
 }

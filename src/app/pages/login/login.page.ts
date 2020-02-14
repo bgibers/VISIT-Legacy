@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService, CredentialsViewModel } from '../../backend/client';
+import { take } from 'rxjs/operators';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -23,9 +24,9 @@ export class LoginPage {
    }
 
   public login() {
-    this.userService.userLoginUser(this.credentials, true).subscribe((res) => {
+    this.userService.userLoginUser(this.credentials, false).subscribe((res) => {
       if (res !== null) {
-        this.router.navigateByUrl('post-register');
+        this.router.navigateByUrl('/home', { replaceUrl: true });
       } else {
         this.error = 'Invalid username/password';
         this.displayError = true;
@@ -34,7 +35,7 @@ export class LoginPage {
   }
 
   public openRegister() {
-     this.router.navigateByUrl('register');
+     this.router.navigateByUrl('/register');
   }
 
 }

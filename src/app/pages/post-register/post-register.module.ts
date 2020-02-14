@@ -8,6 +8,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { PostRegisterPage } from './post-register.page';
 import { MaterialModule } from '../../modules/material.module';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 const routes: Routes = [
   {
@@ -22,6 +23,7 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     MaterialModule,
+    NgxMatSelectSearchModule,
     RouterModule.forChild(routes)
   ],
   declarations: [PostRegisterPage],

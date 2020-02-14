@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { Events } from '@ionic/angular';
@@ -15,7 +15,7 @@ import { MapSelectionMode } from '../../objects/enums/map-selection-mode';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   public visitedCount = 0;
   public futureCount = 0;
   private jwtToken: JwtToken = {} as JwtToken;
@@ -32,18 +32,20 @@ export class HomePage {
 
   constructor(private userService: UserService, private zone: NgZone,
               private locationService: LocationService, private router: Router,
-              private events: Events, public loadingController: LoadingController) {
-                this.map = new Map(zone);
-                events.subscribe('LocationsAdded', () => {
-                  this.ionViewWillEnter();
-                });
-              }
+              private events: Events, public loadingController: LoadingController) {}
 
-  async ionViewDidEnter() {
+  ngOnInit() {
+    this.map = new Map(this.zone);
+    this.events.subscribe('LocationsAdded', () => {
+      this.getUserLocations();
+    });
+  }
+
+  ionViewDidEnter() {
   }
 
   async ionViewWillEnter() {
-    //await this.presentLoading();
+    await this.presentLoading();
     await this.map.createMap('homeMap', MapSelectionMode.NONE);
     this.userService.userGetCurrentUser()
     .pipe(
@@ -52,7 +54,7 @@ export class HomePage {
           async (token) => {
             this.jwtToken = token;
             this.getUserLocations();
-        //    await this.loading.dismiss();
+           await this.loading.dismiss();
           });
       })
     )
@@ -98,7 +100,6 @@ export class HomePage {
    }
 
   getUserLocations() {
-    console.log('GetUserLoc');
     this.locationService.locationGetLocationsByUserId(this.jwtToken.id).subscribe((result: UserLocation[]) => {
       this.userLocations.next(result);
       this.onLoad();
@@ -117,7 +118,6 @@ export class HomePage {
     await this.userService.logout().then(() => {
       this.user = undefined;
       this.jwtToken = undefined;
-      console.log(this.userService.getLoggedInUser);
       this.router.navigateByUrl('login', { replaceUrl: true });
     });
   }

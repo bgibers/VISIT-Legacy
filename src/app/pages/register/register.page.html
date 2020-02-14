@@ -1,5 +1,5 @@
 <ion-content color="light">
-  <mat-vertical-stepper  [linear]="false" #stepper>
+  <mat-vertical-stepper  [linear]="true" #stepper>
     <mat-step [stepControl]="basicInfoForm">
       <form [formGroup]="basicInfoForm">
         <ng-template matStepLabel>Basic Information</ng-template>
@@ -97,19 +97,22 @@
     <mat-step [stepControl]="birthForm" label="Birthplace">
       <form [formGroup]="birthForm">
         <mat-form-field>
-          <mat-select #birthCountrySelect>
+          <mat-label>Birth Country</mat-label>
+          <mat-select formControlName="country" (selectionChange)="checkInputValue()">
             <mat-option>
-              <ngx-mat-select-search formControlName="country"></ngx-mat-select-search>
+              <ngx-mat-select-search formControlName="countryFilter"></ngx-mat-select-search>
             </mat-option>
-            <mat-option *ngFor="let country of birthCountryObservable | async" [value]="country.name" (optionSelected)="checkInputValue()">
+            <mat-option *ngFor="let country of birthCountryObservable | async" [value]="country">
               {{country.name}}
             </mat-option>
           </mat-select>
         </mat-form-field>
+        <br>
         <mat-form-field *ngIf="displayBirthState">
-          <mat-select #birthStateSelect>
+          <mat-label>Birth State</mat-label>
+          <mat-select formControlName="state">
             <mat-option>
-              <ngx-mat-select-search formControlName="state"></ngx-mat-select-search>
+              <ngx-mat-select-search formControlName="stateFilter"></ngx-mat-select-search>
             </mat-option>
             <mat-option *ngFor="let state of birthStateObservable | async" [value]="state.name">
               {{state.name}}
@@ -128,19 +131,22 @@
     <mat-step [stepControl]="residenceForm" label="Current residency">
       <form [formGroup]="residenceForm">
         <mat-form-field>
-          <mat-select #resCountrySelect>
+          <mat-label>Residing Country</mat-label>
+          <mat-select formControlName="country" (selectionChange)="checkInputValue()">
             <mat-option>
-              <ngx-mat-select-search formControlName="country"></ngx-mat-select-search>
+              <ngx-mat-select-search formControlName="countryFilter"></ngx-mat-select-search>
             </mat-option>
             <mat-option *ngFor="let country of residenceCountryObservable | async" [value]="country.name">
               {{country.name}}
             </mat-option>
           </mat-select>
         </mat-form-field>
+        <br>
         <mat-form-field *ngIf="displayResidenceState">
-          <mat-select #resStateSelect>
+          <mat-label>Residing State</mat-label>
+          <mat-select formControlName="state">
             <mat-option>
-              <ngx-mat-select-search formControlName="state"></ngx-mat-select-search>
+              <ngx-mat-select-search formControlName="stateFilter"></ngx-mat-select-search>
             </mat-option>
             <mat-option *ngFor="let state of residenceStateObservable | async" [value]="state.name">
               {{state.name}}

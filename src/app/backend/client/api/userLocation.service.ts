@@ -11,28 +11,27 @@
  */
 /* tslint:disable:no-unused-variable member-ordering */
 
-import { Inject, Injectable, Optional } from '@angular/core';
+import { Inject, Injectable, Optional }                      from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,
-         HttpResponse, HttpEvent } from '@angular/common/http';
-import { CustomHttpUrlEncodingCodec } from '../encoder';
+         HttpResponse, HttpEvent }                           from '@angular/common/http';
+import { CustomHttpUrlEncodingCodec }                        from '../encoder';
 
-import { Observable } from 'rxjs';
+import { Observable }                                        from 'rxjs';
 
 import { UserLocation } from '../model/userLocation';
 
-import { COLLECTION_FORMATS } from '../variables';
-import { Configuration } from '../configuration';
-import { Storage } from '@ionic/storage';
-import { BASE_PATH } from '../../../../environments/environment';
+import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
+import { Configuration }                                     from '../configuration';
+
 
 @Injectable()
 export class UserLocationService {
 
-    protected basePath = BASE_PATH;
+    protected basePath = 'https://localhost:5001';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
 
-    constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration, private storage: Storage) {
+    constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration) {
         if (basePath) {
             this.basePath = basePath;
         }
@@ -184,21 +183,20 @@ export class UserLocationService {
     /**
      *
      *
-     * @param userLocation
+     * @param userLocationList
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public userLocationPostUserLocation(userLocation: UserLocation, observe?: 'body', reportProgress?: boolean): Observable<UserLocation>;
-    public userLocationPostUserLocation(userLocation: UserLocation, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<UserLocation>>;
-    public userLocationPostUserLocation(userLocation: UserLocation, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<UserLocation>>;
-    public userLocationPostUserLocation(userLocation: UserLocation, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public userLocationPostUserLocation(userLocationList: Array<UserLocation>, observe?: 'body', reportProgress?: boolean): Observable<UserLocation>;
+    public userLocationPostUserLocation(userLocationList: Array<UserLocation>, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<UserLocation>>;
+    public userLocationPostUserLocation(userLocationList: Array<UserLocation>, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<UserLocation>>;
+    public userLocationPostUserLocation(userLocationList: Array<UserLocation>, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
 
-        if (userLocation === null || userLocation === undefined) {
-            throw new Error('Required parameter userLocation was null or undefined when calling userLocationPostUserLocation.');
+        if (userLocationList === null || userLocationList === undefined) {
+            throw new Error('Required parameter userLocationList was null or undefined when calling userLocationPostUserLocation.');
         }
 
         let headers = this.defaultHeaders;
-        headers.set('Authoriztion', `Bearer ${this.storage.get('ACCESS_TOKEN')}`);
 
         // to determine the Accept header
         const httpHeaderAccepts: string[] = [
@@ -223,7 +221,7 @@ export class UserLocationService {
         }
 
         return this.httpClient.post<UserLocation>(`${this.basePath}/UserLocation`,
-            userLocation,
+            userLocationList,
             {
                 withCredentials: this.configuration.withCredentials,
                 headers,

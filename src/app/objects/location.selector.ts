@@ -31,4 +31,20 @@ export class LocationSelector implements OnInit {
     public getCountries() {
         return countryRaw as IJsonCountries;
     }
+
+    public getAllLocations() {
+        const options: Array<any> = this.getCountries().Countries;
+        options.push(this.getStates().States);
+        return options.sort(this.compare);
+    }
+
+    public compare(a, b) {
+        let comparison = 0;
+        if (a.name > b.name) {
+          comparison = 1;
+        } else if (a.name < b.name) {
+          comparison = -1;
+        }
+        return comparison;
+      }
 }
