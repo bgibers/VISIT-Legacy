@@ -11,10 +11,14 @@
  */
 
 
-export interface RegistrationUserApi { 
+export interface RegistrationUserApi {
     fName?: string;
     lName?: string;
     userName?: string;
+    birthPlace?: string;
+    residesIn?: string;
+    education?: string;
+    occupationTitle?: string;
     email?: string;
     password?: string;
     birthday: Date;

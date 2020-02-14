@@ -15,8 +15,8 @@ import { User } from './user';
 
 export interface UserLocation { 
     id: number;
-    userId?: string;
-    locationId?: string;
+    userId: string;
+    locationId: string;
     toVisit: number;
     visited: number;
     specialCase?: string;

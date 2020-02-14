@@ -16,9 +16,11 @@ import { UserLocation } from './userLocation';
 export interface User extends IdentityUser { 
     fName?: string;
     lName?: string;
-    uname?: string;
     birthday: Date;
-    email?: string;
+    birthPlace?: string;
+    residesIn?: string;
+    education?: string;
+    occupationTitle?: string;
     avi?: string;
     facebookId?: number;
     userLocation?: Array<UserLocation>;

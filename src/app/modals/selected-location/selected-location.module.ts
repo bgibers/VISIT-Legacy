@@ -6,7 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { SelectedLocationPage } from './selected-location.page';
-import { CustomFooterComponent } from '../../custom-footer/custom-footer.component';
+import { CustomFooterComponent } from '../../components/custom-footer/custom-footer.component';
 
 const routes: Routes = [
   {
@@ -22,7 +22,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [SelectedLocationPage, CustomFooterComponent],
+  declarations: [SelectedLocationPage],
   exports: [SelectedLocationPage]
 
 })

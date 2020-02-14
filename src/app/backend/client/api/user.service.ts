@@ -16,7 +16,7 @@ import { HttpClient, HttpHeaders, HttpParams,
          HttpResponse, HttpEvent } from '@angular/common/http';
 import { CustomHttpUrlEncodingCodec } from '../encoder';
 import { Storage } from '@ionic/storage';
-
+import { Platform } from '@ionic/angular';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -25,21 +25,25 @@ import { JwtToken } from '../model/jwtToken';
 import { RegistrationUserApi } from '../model/registrationUserApi';
 import { User } from '../model/user';
 
-import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
+import { COLLECTION_FORMATS } from '../variables';
 import { Configuration } from '../configuration';
-import { async } from 'q';
+import { BASE_PATH } from '../../../../environments/environment';
+import { LoggedInUser } from '../model/loggedInUser';
+import { IdentityResult } from '../model/identityResult';
+
 
 export const InterceptorSkipHeader = 'X-Skip-Interceptor';
 @Injectable()
 export class UserService {
 
-    protected basePath = 'https://visitsvc.azurewebsites.net';
+    protected basePath = BASE_PATH;
     public defaultHeaders = new HttpHeaders().set(InterceptorSkipHeader, '');
     public configuration = new Configuration();
     public authSubject = new BehaviorSubject(false);
 
     constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string,
                 private storage: Storage,
+                private platform: Platform,
                 @Optional() configuration: Configuration) {
         if (basePath) {
             this.basePath = basePath;
@@ -48,6 +52,9 @@ export class UserService {
             this.configuration = configuration;
             this.basePath = basePath || configuration.basePath || this.basePath;
         }
+        this.platform.ready().then(() => {
+            this.ifLoggedIn();
+          });
     }
 
     /**
@@ -71,9 +78,9 @@ export class UserService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public userGetCurrentUser(observe?: 'body', reportProgress?: boolean): Observable<User>;
-    public userGetCurrentUser(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<User>>;
-    public userGetCurrentUser(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<User>>;
+    public userGetCurrentUser(observe?: 'body', reportProgress?: boolean): Observable<LoggedInUser>;
+    public userGetCurrentUser(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<LoggedInUser>>;
+    public userGetCurrentUser(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<LoggedInUser>>;
     public userGetCurrentUser(observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
 
         let headers = this.defaultHeaders;
@@ -93,7 +100,7 @@ export class UserService {
         const consumes: string[] = [
         ];
 
-        return this.httpClient.get<User>(`${this.basePath}/User/self`,
+        return this.httpClient.get<LoggedInUser>(`${this.basePath}/User/self`,
             {
                 withCredentials: this.configuration.withCredentials,
                 headers,
@@ -113,7 +120,7 @@ export class UserService {
     // public userLoginUser(credentials: CredentialsViewModel, observe: any = 'body', reportProgress: boolean = false ): Observable<any>;
     // public userLoginUser(credentials: CredentialsViewModel, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<JwtToken>>;
     // public userLoginUser(credentials: CredentialsViewModel, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<JwtToken>>;
-    public userLoginUser(credentials: CredentialsViewModel, observe?: 'body', reportProgress?: boolean): Observable<JwtToken> {
+    public userLoginUser(credentials: CredentialsViewModel, postRegister: boolean , observe?: 'body', reportProgress?: boolean): Observable<JwtToken> {
     // public userLoginUser(credentials: CredentialsViewModel, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
 
         if (credentials === null || credentials === undefined) {
@@ -158,24 +165,36 @@ export class UserService {
                     await this.storage.set('ACCESS_TOKEN', res.authToken);
                     await this.storage.set('USER_ID', res.id);
                     await this.storage.set('EXPIRES_IN', res.expiresIn);
-                    this.authSubject.next(true);
+                    this.userGetCurrentUser().subscribe(async curr => {
+                        curr.userId = res.id;
+                        curr.jwtToken = res.authToken;
+                        await this.storage.set('USER', res);
+                    });
+                    if (!postRegister) {
+                        this.authSubject.next(true);
+                    }
                 }
             })
         );
     }
 
+    public setAuthSubject() {
+        this.authSubject.next(true);
+    }
+
     public async logout() {
         await this.storage.remove('ACCESS_TOKEN');
         await this.storage.remove('USER_ID');
+        await this.storage.remove('USER');
         await this.storage.remove('EXPIRES_IN');
         this.authSubject.next(false);
     }
 
     public isLoggedIn() {
-        return this.authSubject.asObservable();
+        return this.authSubject.value;
     }
 
-    public async getUser(): Promise<JwtToken> {
+    public async getUserToken(): Promise<JwtToken> {
         if (this.isLoggedIn) {
             const token: JwtToken = {
                 authToken: await this.storage.get('ACCESS_TOKEN'),
@@ -186,6 +205,22 @@ export class UserService {
             return token;
         }
     }
+
+    public async getLoggedInUser(): Promise<LoggedInUser> {
+        if (this.isLoggedIn) {
+            const user: LoggedInUser = await this.storage.get('USER') as LoggedInUser;
+            return user;
+        }
+    }
+
+    ifLoggedIn() {
+        this.storage.get('USER').then((response) => {
+          if (response) {
+            this.authSubject.next(true);
+            console.log(response);
+          }
+        });
+      }
 
     public async getToken(): Promise<string> {
         return await this.storage.get('ACCESS_TOKEN');
@@ -233,6 +268,110 @@ export class UserService {
 
         return this.httpClient.post<User>(`${this.basePath}/User`,
             user,
+            {
+                withCredentials: this.configuration.withCredentials,
+                headers,
+                observe,
+                reportProgress
+            }
+        );
+    }
+
+    /**
+     * 
+     * 
+     * @param login 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public userDoesUserExist(login?: string, observe?: 'body', reportProgress?: boolean): Observable<boolean>;
+    public userDoesUserExist(login?: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<boolean>>;
+    public userDoesUserExist(login?: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<boolean>>;
+    public userDoesUserExist(login?: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+
+
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (login !== undefined && login !== null) {
+            queryParameters = queryParameters.set('login', <any>login);
+        }
+
+        let headers = this.defaultHeaders;
+
+        // to determine the Accept header
+        let httpHeaderAccepts: string[] = [
+            'text/plain',
+            'application/json',
+            'text/json'
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected != undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+        ];
+
+        return this.httpClient.get<boolean>(`${this.basePath}/User/exists`,
+            {
+                params: queryParameters,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+        /**
+     *
+     *
+     * @param image
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public userUpdateProfileImage(image?: Blob, observe?: 'body', reportProgress?: boolean): Observable<IdentityResult>;
+    public userUpdateProfileImage(image?: Blob, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<IdentityResult>>;
+    public userUpdateProfileImage(image?: Blob, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<IdentityResult>>;
+    public userUpdateProfileImage(image?: Blob, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+
+
+        let headers = this.defaultHeaders;
+
+        // to determine the Accept header
+        const httpHeaderAccepts: string[] = [
+            'text/plain',
+            'application/json',
+            'text/json'
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected != undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'multipart/form-data'
+        ];
+
+        const canConsumeForm = this.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): void; };
+        let useForm = false;
+        const convertFormParamsToString = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        }
+
+        formParams.append('image',  image as any);
+
+        return this.httpClient.post<IdentityResult>(`${this.basePath}/User/update/profileimage`,
+            convertFormParamsToString ? formParams.toString() : formParams,
             {
                 withCredentials: this.configuration.withCredentials,
                 headers,

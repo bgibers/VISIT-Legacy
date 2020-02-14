@@ -8,7 +8,8 @@ import am4geodata_usaLow from '@amcharts/amcharts4-geodata/usaLow';
 import am4geodata_canadaLow from '@amcharts/amcharts4-geodata/canadaLow';
 import am4geodata_russiaLow from '@amcharts/amcharts4-geodata/russiaLow';
 import { JwtToken, UserService, LocationService, UserLocationService, UserLocation } from '../../backend/client';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { Events } from '@ionic/angular';
 
 @Component({
@@ -32,7 +33,9 @@ export class SelectedLocationPage {
   private newLocations: UserLocation[] = [{
     id: 0,
     toVisit: 0,
-    visited: 0
+    visited: 0,
+    userId: '',
+    locationId: undefined
   }];
 
   constructor(private navParams: NavParams,
@@ -75,7 +78,7 @@ export class SelectedLocationPage {
 
   async ionViewWillEnter() {
     await this.loadMap();
-    this.jwtToken = await this.userService.getUser();
+    this.jwtToken = await this.userService.getUserToken();
     this.getUserLocations();
   }
 
@@ -167,10 +170,10 @@ export class SelectedLocationPage {
         russiaPolygonTemplate.nonScalingStroke = true;
 
         const russiaVisited = russiaPolygonTemplate.states.create('visited');
-        russiaVisited.properties.fill = am4core.color('#0000FF');
+        russiaVisited.properties.fill = am4core.color('#E94F37');
 
         const russiaToVisit = russiaPolygonTemplate.states.create('toVisit');
-        russiaToVisit.properties.fill = am4core.color('#E94F37');
+        russiaToVisit.properties.fill = am4core.color('#0000FF');
 
         console.log(polygonTemplate);
         console.log(worldSeries);
@@ -325,11 +328,12 @@ export class SelectedLocationPage {
     if (!initialLoad) {
       const newLocation: UserLocation = {
         userId: this.jwtToken.id,
-        locationId: locationId,
+        locationId,
         visited: status === 'visited' ? 1 : 0,
         toVisit: status === 'toVisit' ? 1 : 0,
         specialCase: ''
       } as UserLocation;
+
       this.newLocations.push(newLocation);
     }
 
@@ -371,11 +375,11 @@ export class SelectedLocationPage {
   }
 
   submit() {
-    this.newLocations.forEach(location => {
-      this.userLocationService.userLocationPostUserLocation(location).subscribe((result: UserLocation) => {});
-      this.events.publish('LocationsAdded');
-    });
-    this.modalCtrl.dismiss();
+      this.newLocations = this.newLocations.filter(l => l.locationId !== undefined);
+      this.userLocationService.userLocationPostUserLocation(this.newLocations).pipe(take(1)).subscribe((result: UserLocation) => {
+        this.events.publish('LocationsAdded');
+        this.modalCtrl.dismiss();
+      });
   }
 
   cancel() {

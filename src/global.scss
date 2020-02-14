@@ -24,3 +24,11 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+@import "~@ng-select/ng-select/themes/material.theme.css";
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
