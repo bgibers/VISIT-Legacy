@@ -72,13 +72,13 @@ export class HomePage implements OnInit {
     });
   }
 
-  presentLoading() {
+  async presentLoading() {
     // Prepare a loading controller
-    this.loading = this.loadingController.create({
+    this.loading = await this.loadingController.create({
         message: 'Loading...'
     });
     // Present the loading controller
-    this.loading.present();
+    await this.loading.present();
   }
 
   onLoad() {
