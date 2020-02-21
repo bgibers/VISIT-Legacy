@@ -1,6 +1,6 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { finalize, take } from 'rxjs/operators';
 import { Events } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
@@ -54,7 +54,6 @@ export class HomePage implements OnInit {
           async (token) => {
             this.jwtToken = token;
             this.getUserLocations();
-           await this.loading.dismiss();
           });
       })
     )
@@ -69,6 +68,7 @@ export class HomePage implements OnInit {
       } else {
         this.profilePic = 'data:image/jpeg;base64,' + res.avi;
       }
+      this.loading.dismiss();
     });
   }
 
@@ -100,7 +100,7 @@ export class HomePage implements OnInit {
    }
 
   getUserLocations() {
-    this.locationService.locationGetLocationsByUserId(this.jwtToken.id).subscribe((result: UserLocation[]) => {
+    this.locationService.locationGetLocationsByUserId(this.jwtToken.id).pipe(take(1)).subscribe((result: UserLocation[]) => {
       this.userLocations.next(result);
       this.onLoad();
     });

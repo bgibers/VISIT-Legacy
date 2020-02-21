@@ -12,6 +12,7 @@ import { MapSelectionMode } from '../../objects/enums/map-selection-mode';
 import { LocationSelector } from 'src/app/objects/location.selector';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'post-register',
@@ -22,7 +23,6 @@ export class PostRegisterPage implements OnInit {
   private jwtToken: JwtToken = {} as JwtToken;
   public user: LoggedInUser = {} as LoggedInUser;
   public profilePic = '../../../assets/defaultuser.png';
-  public imageData: any;
   private loading: any;
   private visitedMap: Map;
   private toVisitMap: Map;
@@ -113,13 +113,42 @@ export class PostRegisterPage implements OnInit {
       mediaType: this.camera.MediaType.PICTURE
     };
     this.camera.getPicture(options).then((res) => {
-      // imageData is either a base64 encoded string or a file URI
-      // If it's base64 (DATA_URL):
-      this.imageData = res;
-      this.profilePic = 'data:image/jpeg;base64,' + res;
+      this.profilePic = res;
       console.log(res);
     }, (err) => {
       // Handle error
+    });
+  }
+
+    // FILE STUFF
+  makeFileIntoBlob(imagePath): Promise<Blob> {
+    // INSTALL PLUGIN - cordova plugin add cordova-plugin-file
+    return new Promise((resolve, reject) => {
+      let fileName: string;
+      this.file
+        .resolveLocalFilesystemUrl(imagePath)
+        .then(fileEntry => {
+          const { name, nativeURL } = fileEntry;
+
+          // get the path..
+          const path = nativeURL.substring(0, nativeURL.lastIndexOf('/'));
+
+          fileName = name;
+
+          // we are provided the name, so now read the file into a buffer
+          return this.file.readAsArrayBuffer(path, name);
+        })
+        .then(buffer => {
+          // get the buffer and make a blob to be saved
+          const imgBlob: Blob = new Blob([buffer], {
+            type: 'image/jpeg'
+          });
+
+          resolve(
+            imgBlob
+          );
+        })
+        .catch(e => reject(e));
     });
   }
 
@@ -151,7 +180,7 @@ export class PostRegisterPage implements OnInit {
     this.canRegister = !this.canRegister;
   }
 
-  submit() {
+  async submit() {
     const locationsToPost: UserLocation[] = [];
 
     this.visitedMap.selectedArr.forEach(visited => {
@@ -174,10 +203,13 @@ export class PostRegisterPage implements OnInit {
       } as UserLocation);
     });
 
-    this.userLocationService.userLocationPostUserLocation(locationsToPost)
-                            .pipe(take(1)).subscribe(x => {
-                              this.userService.setAuthSubject();
-                              this.router.navigateByUrl('home', { replaceUrl: true })
-                            });
+    this.userService.setAuthSubject();
+
+    const postLocations = this.userLocationService.userLocationPostUserLocation(locationsToPost);
+    const postProfileImage = this.makeFileIntoBlob(this.profilePic).then(img => this.userService.userUpdateProfileImage(img));
+
+    forkJoin([postLocations, postProfileImage]).subscribe(x => {
+      this.router.navigateByUrl('home', { replaceUrl: true });
+    });
   }
 }
